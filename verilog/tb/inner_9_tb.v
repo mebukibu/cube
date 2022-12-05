@@ -1,6 +1,6 @@
 `include "../data/num_data.v"
 
-module inner_old_tb ();
+module inner_9_tb ();
 
   reg clk;
   reg rst_n;
@@ -9,7 +9,7 @@ module inner_old_tb ();
   reg signed [9*`data_len - 1:0] d2;
   wire signed [`data_len - 1:0] q;
 
-  inner_old inner0(clk, rst_n, load, d1, d2, q);
+  inner_9 inner0(clk, rst_n, load, d1, d2, q);
 
   initial clk = 0;
   always #50 clk = ~clk;

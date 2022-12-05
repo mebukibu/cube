@@ -1,6 +1,6 @@
 `include "../data/num_data.v"
 
-module inner_old (
+module inner_9 (
     input wire clk,
     input wire rst_n,
     input wire load,

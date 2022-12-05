@@ -1,3 +1,5 @@
+// not use
+
 `include "../data/num_data.v"
 
 module inner_new (
