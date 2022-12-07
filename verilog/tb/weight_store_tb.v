@@ -8,7 +8,7 @@ module weight_store_tb ();
   wire valid;
   wire [288*`data_len - 1:0] q;
 
-  weight_store weight0(clk, cs, valid, q);
+  weight_store #("../data/data18/weight18_0.txt") weight0(clk, cs, valid, q);
 
   initial clk = 0;
   always #5 clk = ~clk;

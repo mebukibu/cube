@@ -13,9 +13,9 @@ module im2col (
   always @(posedge clk, negedge rst_n)
     if (!rst_n) q <= 0;
     else if (load) begin
-      for (i = 0; i < 32; i = i+1) begin    // input data size is (32,5,6).
-        for (j = 0; j < 3; j = j+1) begin
-          for (k = 0; k < 4; k = k+1) begin
+      for (i = 0; i < 32; i = i + 1) begin    // input data size is (32,5,6).
+        for (j = 0; j < 3; j = j + 1) begin
+          for (k = 0; k < 4; k = k + 1) begin
             q[((0+288*k+288*4*j+9*i)*`data_len) +: 3*`data_len] <= d[(( 0+k+6*j+30*i)*`data_len) +: 3*`data_len];
             q[((3+288*k+288*4*j+9*i)*`data_len) +: 3*`data_len] <= d[(( 6+k+6*j+30*i)*`data_len) +: 3*`data_len];
             q[((6+288*k+288*4*j+9*i)*`data_len) +: 3*`data_len] <= d[((12+k+6*j+30*i)*`data_len) +: 3*`data_len];

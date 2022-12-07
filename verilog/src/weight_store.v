@@ -1,15 +1,17 @@
 `include "../data/num_data.v"
 `include "../data/state_layer_data.v"
 
-module weight_store (
-  input wire clk,
-  input wire [2:0] cs,
-  output reg valid,
-  output wire [288*`data_len - 1:0] q
+module weight_store #(
+    parameter filename = "../data/data18/weight18_0.txt"
+  ) (
+    input wire clk,
+    input wire [2:0] cs,
+    output reg valid,
+    output wire [288*`data_len - 1:0] q
   );
 
   reg [10:0] addr;
-  wire [`data_len - 1:0] ramout;
+  wire [`data_len - 1:0] romout;
 
   reg init;
   reg [2:0] cs_tmp;
@@ -19,7 +21,7 @@ module weight_store (
   reg [`data_len - 1:0] weight [0:288 - 1];
 
   rom #(
-
+    .filename(filename)
   ) rom0 (
     .clk(clk),
     .addr(addr),
