@@ -22,7 +22,7 @@ module weight_store #(
 
   rom #(
     .filename(filename)
-  ) rom0 (
+  ) rom_inst (
     .clk(clk),
     .addr(addr),
     .q(ramout)

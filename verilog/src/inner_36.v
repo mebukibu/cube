@@ -9,12 +9,12 @@ module inner_36 (
     output reg signed [`data_len - 1:0] q
   );
 
-  wire signed [`data_len - 1:0] temp[4 - 1:0];
+  wire signed [`data_len - 1:0] temp [4 - 1:0];
 
   generate
     genvar i;
     for (i = 0; i < 4; i = i + 1) begin :inner9
-      inner_9 inner_9_inst(
+      inner_9 inner_9_inst (
         .clk(clk),
         .rst_n(rst_n),
         .load(load),
