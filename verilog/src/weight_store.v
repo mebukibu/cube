@@ -5,7 +5,7 @@ module weight_store (
   input wire clk,
   input wire [2:0] cs,
   output reg valid,
-  output reg [288*`data_len - 1:0] q
+  output wire [288*`data_len - 1:0] q
   );
 
   reg [10:0] addr;
@@ -14,7 +14,9 @@ module weight_store (
   reg init;
   reg [2:0] cs_tmp;
   reg [8:0] cnt;
-  reg [12:0] index;               // 2^13 = 8192 > 288*18 = 5184. 18 is `data_len.  
+  reg [8:0] index;
+
+  reg [`data_len - 1:0] weight [0:288 - 1];
 
   rom #(
 
@@ -47,7 +49,7 @@ module weight_store (
       addr <= addr + 1;      
     end
     else if (cnt < 288 + 1) begin
-      index <= index + `data_len;
+      index <= index + 1;
       cnt <= cnt + 1;
       addr <= addr + 1;
     end
@@ -55,7 +57,14 @@ module weight_store (
       valid <= 1;
       cnt <= cnt + 1;
     end
-    q[index +: `data_len] <= ramout;
+    weight[index] <= ramout;
   end
+
+  generate
+    genvar i;
+    for (i = 0; i < 288; i = i + 1) begin
+      assign q[i*`data_len +: `data_len] = weight[i];
+    end
+  endgenerate
   
 endmodule
