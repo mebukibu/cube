@@ -25,7 +25,7 @@ module weight_store #(
   ) rom_inst (
     .clk(clk),
     .addr(addr),
-    .q(ramout)
+    .q(romout)
   );  
 
   // if cs change, init = 1. not init = 0.
@@ -36,7 +36,7 @@ module weight_store #(
   end
 
   always @(posedge clk) begin
-    if (init == 1) begin
+    if (init) begin
       valid <= 0;
       index <= 0;
       cnt <= 0;
@@ -59,7 +59,7 @@ module weight_store #(
       valid <= 1;
       cnt <= cnt + 1;
     end
-    weight[index] <= ramout;
+    weight[index] <= romout;
   end
 
   generate
