@@ -45,6 +45,7 @@ module weight_store #(
       else if (cs == `LAYER2) addr <= 2*288;
       else if (cs == `LAYER3) addr <= 3*288;
       else if (cs == `AFFINE) addr <= 4*288;
+      else addr <= 11'hXXXX;
     end
     else if (cnt == 0) begin
       cnt <= cnt + 1;

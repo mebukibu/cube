@@ -9,7 +9,7 @@ module inner_36 (
     output reg signed [`data_len - 1:0] q
   );
 
-  wire signed [`data_len - 1:0] temp [4 - 1:0];
+  wire signed [`data_len - 1:0] temp [0:3];
 
   generate
     genvar i;
