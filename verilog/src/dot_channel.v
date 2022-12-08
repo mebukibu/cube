@@ -13,8 +13,8 @@ module dot_channel #(
   );
 
   // ports for inner_36
-  reg [36*`data_len - 1:0] weight2inner;
   reg [36*`data_len - 1:0] data2inner;
+  reg [36*`data_len - 1:0] weight2inner;
   wire [`data_len - 1:0] innerout;
 
   // ports for weight_store
@@ -44,7 +44,7 @@ module dot_channel #(
 
   weight_store #(
     .filename(filename)
-  ) weight_store0 (
+  ) weight_store_inst (
     .clk(clk),
     .cs(cs),
     .valid(ws_valid),
@@ -86,29 +86,26 @@ module dot_channel #(
       if (ws_valid) begin
         if (inner_cnt < 4 && set_cnt < 8 && line_cnt < 12) begin
           inner_cnt <= inner_cnt + 1;
-          data2inner <= data36[d_index];
-          weight2inner <= weight36[w_index];
         end
-        else if (inner_cnt == 4) begin
+        else if (inner_cnt == 4 && set_cnt != 8 && line_cnt != 12) begin
           inner_cnt <= 0;
           set_cnt <= set_cnt + 1;
           d_index <= d_index + 1;
           w_index <= w_index + 1;
           inner_temp <= inner_temp + innerout;
         end
-        else if (set_cnt == 8) begin
+        else if (inner_cnt == 0 && set_cnt == 8 && line_cnt != 12) begin
           inner_cnt <= 0;
           set_cnt <= 0;
           w_index <= 0;
           line_cnt <= line_cnt + 1;
           inner_temp <= 0;
-          q_temp[line_cnt] <= inner_temp;
         end
-        else if (line_cnt == 12) begin
+        else if (inner_cnt == 0 && set_cnt == 0 && line_cnt == 12) begin
           valid = 1;
-          inner_cnt <= 5;
-          set_cnt <= 9;
-          line_cnt <= 13;
+          inner_cnt <= 0;
+          set_cnt <= 0;
+          line_cnt <= 12;
         end
       end
       else begin
@@ -121,6 +118,11 @@ module dot_channel #(
         inner_temp <= 0;
       end
     end
+
+    data2inner <= data36[d_index];
+    weight2inner <= weight36[w_index];
+    q_temp[line_cnt] <= inner_temp;
+
   end
   
 endmodule
