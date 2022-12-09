@@ -18,9 +18,9 @@ module add_bias (
   always @(posedge clk) begin
     if (cs == `LAYER0) offset <= 0;
     else if (cs == `LAYER1) offset <= 32;
-    else if (cs == `LAYER1) offset <= 2*32;
-    else if (cs == `LAYER1) offset <= 3*32;
-    else if (cs == `LAYER1) offset <= 4*32;
+    else if (cs == `LAYER2) offset <= 2*32;
+    else if (cs == `LAYER3) offset <= 3*32;
+    else if (cs == `AFFINE) offset <= 4*32;
     else offset <= 8'hXX;
   end
 
@@ -29,7 +29,7 @@ module add_bias (
     else if (load) begin
       for (i = 0; i < 32; i = i + 1) begin
         for (j = 0; j < 12; j = j + 1) begin
-          q[(12*i+j)*`data_len +: `data_len] <= d[(12*i+j)*`data_len +: `data_len] + bias[j + offset];
+          q[(12*i+j)*`data_len +: `data_len] <= d[(12*i+j)*`data_len +: `data_len] + bias[i + offset];
         end
       end
     end
