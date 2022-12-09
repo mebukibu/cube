@@ -38,8 +38,10 @@ module dot (
     if (load) begin
       if (&dc_valid) begin
         dc_start <= 0;
-        index <= index + 1;
         q_temp[index] <= dcout;
+        if (dc_start == 0) begin
+          index <= index + 1;
+        end
       end
       else if (index == 12) begin
         valid <= 1;
