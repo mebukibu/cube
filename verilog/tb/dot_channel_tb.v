@@ -6,9 +6,9 @@ module dot_channel_tb ();
   reg rst_n;
   reg load;
   reg [2:0] cs;
-  reg [12*288*`data_len - 1:0] d;
+  reg [288*`data_len - 1:0] d;
   wire valid;
-  wire [12*`data_len - 1:0] q;
+  wire [`data_len - 1:0] q;
 
   dot_channel dot_channel0 (clk, rst_n, load, cs, d, valid, q);
 
@@ -17,12 +17,14 @@ module dot_channel_tb ();
 
   initial begin
     $dumpvars;
-    rst_n=0; load=0; cs=0; d={12*288{18'b0000_01_00_0000_0000}}; #10
+    rst_n=0; load=0; cs=0; d={288{18'b0000_01_00_0000_0000}}; #10
     rst_n=1; #10
     cs=1; #10
     load=1; #10
     #3000
-    #5100
+    #5000
+    //load=0;
+    #100
     cs=2; #100
     #3000
     #5000
