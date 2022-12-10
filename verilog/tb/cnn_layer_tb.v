@@ -2,20 +2,26 @@
 
 module cnn_layer_tb ();
 
+  // ports for cnn
   reg clk;
   reg rst_n;
   reg cnld;
   reg [2:0] cs_layer;
-  //reg [32*3*4*`data_len - 1:0] d;
   wire valid;
-  wire [32*12*`data_len - 1:0] q;
+  wire [32*12*`data_len - 1:0] cnnout;
 
+  // ports for buffer
   reg bfld;
   reg [32*4 - 1:0] bufin;
   wire [32*3*4*`data_len - 1:0] bufout;
 
+  // ports for elu
+  wire eluvld;
+  wire [32*12*`data_len - 1:0] q;
+
   cube_data_buffer buf0 (.clk(clk), .rst_n(rst_n), .load(bfld), .d(bufin), .q(bufout));
-  cnn_layer cnn_layer0  (.clk(clk), .rst_n(rst_n), .load(cnld), .cs_layer(cs_layer), .d(bufout), .valid(valid), .q(q));
+  cnn_layer cnn_layer0  (.clk(clk), .rst_n(rst_n), .load(cnld), .cs_layer(cs_layer), .d(bufout), .valid(valid), .q(cnnout));
+  elu_layer elu_layer0  (.clk(clk), .load(valid), .d(cnnout), .valid(eluvld), .q(q));
 
   initial clk = 0;
   always #5 clk = ~clk;
