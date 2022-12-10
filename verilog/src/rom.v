@@ -12,7 +12,7 @@ module rom #(
   );
 
   (* ram_style = "block" *)
-  reg [`data_len - 1:0] mem [0:words - 1];
+  reg [dwidth - 1:0] mem [0:words - 1];
 
   always @(posedge clk) begin
     q <= mem[addr];
