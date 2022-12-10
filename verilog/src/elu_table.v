@@ -4,7 +4,8 @@ module elu_table #(
     parameter filename = "../data/data18/eLU_table.txt",
     parameter integer dwidth = 8,
     parameter integer awidth = 11,          // 2^11 = 2048 > 1597
-    parameter integer words = 1597
+    parameter integer words = 1597,
+    parameter integer num = `data_dec - dwidth
   ) (
     input wire clk,
     input wire signed [`data_len - 1:0] d,
@@ -16,7 +17,7 @@ module elu_table #(
   wire [dwidth - 1:0] romout;
 
   // use in this module
-  parameter integer num = `data_dec - dwidth;
+  reg signed [`data_len - 1:0] data_delay1, data_delay2;
 
   rom #(
     .filename(filename),
@@ -33,17 +34,20 @@ module elu_table #(
     // address convert 1597=11'b110_00111101 -> 6.23828125
     data2rom <= d[num +: awidth] + (d[num - 1] == 1) + 1597;
 
+    data_delay1 <= d;
+    data_delay2 <= data_delay1;
+
     // d < -6.240234375. 1597.5*4=6390
-    if (d < -6390) begin
+    if (data_delay2 < -6390) begin
       q <= {{`data_int{1'b1}}, {`data_dec{1'b0}}};  // -1 (ex. 18bit -> 11111111_0000000000)
     end
     // -6.240234375 =< d < 0
-    else if (d < 0) begin
+    else if (data_delay2 < 0) begin
       q <= {{`data_int{1'b1}}, romout, {num{1'b0}}};
     end
     // 0 =< d
     else begin
-      q <= d;
+      q <= data_delay2;
     end
   end
 
