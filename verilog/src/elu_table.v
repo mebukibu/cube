@@ -1,23 +1,51 @@
+`include "../data/num_data.v"
+
 module elu_table #(
     parameter filename = "../data/data18/eLU_table.txt",
     parameter integer dwidth = 8,
     parameter integer awidth = 11,          // 2^11 = 2048 > 1597
     parameter integer words = 1597
   ) (
-    //input wire clk,
-    input wire [awidth - 1:0] addr,
-    output wire [dwidth - 1:0] q
+    input wire clk,
+    input wire signed [`data_len - 1:0] d,
+    output reg [`data_len - 1:0] q
   );
 
-  //(* ram_style = "block" *)
-  reg [dwidth - 1:0] mem [0:words - 1];
+  // ports for elu_rom
+  reg [awidth - 1:0] data2rom;
+  wire [dwidth - 1:0] romout;
 
-  //always @(posedge clk) begin
-  assign q = mem[addr];
-  //end
+  // use in this module
+  parameter integer num = `data_dec - dwidth;
 
-  initial begin
-    $readmemb(filename, mem);
+  rom #(
+    .filename(filename),
+    .dwidth(dwidth),
+    .awidth(awidth),
+    .words(words)
+  ) rom_inst (
+    .clk(clk),
+    .addr(data2rom),
+    .q(romout)
+  );
+
+  always @(posedge clk) begin
+    // address convert 1597=11'b110_00111101 -> 6.23828125
+    data2rom <= d[num +: awidth] + (d[num - 1] == 1) + 1597;
+
+    // d < -6.240234375. 1597.5*4=6390
+    if (d < -6390) begin
+      q <= {{`data_int{1'b1}}, {`data_dec{1'b0}}};  // -1 (ex. 18bit -> 11111111_0000000000)
+    end
+    // -6.240234375 =< d < 0
+    else if (d < 0) begin
+      q <= {{`data_int{1'b1}}, romout, {num{1'b0}}};
+    end
+    // 0 =< d
+    else begin
+      q <= d;
+    end
   end
-  
+
+
 endmodule

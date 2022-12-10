@@ -1,29 +1,25 @@
-`timescale 1 ns / 1 ps
+`include "../data/num_data.v"
 
 module elu_table_tb ();
 
   reg clk;
-  reg [11 - 1:0] addr;
-  wire [8 - 1:0] q;
+  reg [`data_len - 1:0] d;
+  wire [`data_len - 1:0] q;
 
-  rom #(
-    .filename("../data/data18/eLU_table.txt"),
-    .dwidth(8),
-    .awidth(11),
-    .words(1597)
-  ) rom0 (clk, addr, q);
+ elu_table elu_table (clk, d, q);
 
   initial clk = 0;
-  always #5 clk = ~clk;
+  always #50 clk = ~clk;
 
   initial begin
     $dumpvars;
-    #5
-    addr=0; #10
-    addr=1; #10
-    addr=300; #10
-    addr=1596; #10
-    #10
+    #51
+    d=18'b11111001_1100001010; #300 // -6.240234375
+    d=18'b00000000_0000000000; #300 // 0
+    d=18'b11111111_0000000000; #300 // -1
+    d=18'b00000001_0000000000; #300 // 1
+    d=18'b11111000_0000000000; #300 // -8
+    #500
     $finish;
   end
 
