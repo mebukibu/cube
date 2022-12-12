@@ -6,7 +6,7 @@ module dot_channel #(
     input wire clk,
     input wire rst_n,
     input wire load,
-    input wire [2:0] cs,
+    input wire [3:0] cs,
     input wire [288*`data_len - 1:0] d,
     output reg valid,
     output wire [`data_len - 1:0] q

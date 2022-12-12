@@ -6,7 +6,7 @@ module cnn_layer (
     input wire clk,
     input wire rst_n,
     input wire load,
-    input wire [2:0] cs_layer,
+    input wire [3:0] cs_layer,
     input wire [32*3*4*`data_len - 1:0] d,
     input wire [32*3*4*`data_len - 1:0] d_affine,
     output wire valid,

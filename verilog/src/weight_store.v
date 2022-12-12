@@ -5,7 +5,7 @@ module weight_store #(
     parameter filename = "../data/data18/weight18_0.txt"
   ) (
     input wire clk,
-    input wire [2:0] cs,
+    input wire [3:0] cs,
     output reg valid,
     output wire [288*`data_len - 1:0] q
   );

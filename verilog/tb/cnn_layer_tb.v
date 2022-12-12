@@ -7,7 +7,7 @@ module cnn_layer_tb ();
   reg clk;
   reg rst_n;
   reg cnld;
-  reg [2:0] cs_layer;
+  reg [3:0] cs_layer;
   reg [32*3*4*`data_len - 1:0] d_af;
   wire valid;
   wire [32*12*`data_len - 1:0] cnnout;
