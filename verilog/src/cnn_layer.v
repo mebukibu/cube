@@ -8,7 +8,7 @@ module cnn_layer (
     input wire load,
     input wire [3:0] cs_layer,
     input wire [32*3*4*`data_len - 1:0] d,
-    input wire [32*3*4*`data_len - 1:0] d_affine,
+    input wire [12*288*`data_len - 1:0] d_affine,
     output wire valid,
     output wire [32*12*`data_len - 1:0] q
   );

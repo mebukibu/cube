@@ -52,6 +52,8 @@ module elu_layer (
       else if (d_index == 31 && q_index == 31) begin
         valid <= 1;
       end
+      data2elu <= data12[d_index];
+      q_temp[q_index] <= eluout;
     end
     else begin
       valid <= 0;
@@ -59,8 +61,7 @@ module elu_layer (
       q_index <= 0;
     end
 
-    data2elu <= data12[d_index];
-    q_temp[q_index] <= eluout;
+    
 
   end
 
