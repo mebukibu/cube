@@ -3,7 +3,7 @@ module network_tb ();
   reg clk;
   reg rst_n;
   reg load;
-  reg [32*4 - 1:0] d;
+  reg [120 - 1:0] d;
   wire valid;
   wire [3:0] q;
 
@@ -14,7 +14,7 @@ module network_tb ();
 
   initial begin
     $dumpvars;
-    rst_n=0; load=0; d=128'h82a54907b1630900184e800098f; #10
+    rst_n=0; load=0; d=120'h82a54907b1630900184e800098f; #10
     rst_n=1; #10
     load=1; #10
     #30000

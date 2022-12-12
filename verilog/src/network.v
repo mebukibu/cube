@@ -5,7 +5,7 @@ module network (
     input wire clk,
     input wire rst_n,
     input wire load,
-    input wire [32*4 - 1:0] d,
+    input wire [120 - 1:0] d,
     output wire valid,
     output wire [3:0] q 
   );
