@@ -1,6 +1,10 @@
-`define LIDLE   3'b000
-`define LAYER0  3'b001
-`define LAYER1  3'b010
-`define LAYER2  3'b011
-`define LAYER3  3'b100
-`define AFFINE  3'b101
+`define LIDLE   4'b0000
+`define BUFFER  4'b0001
+`define LAYER0  4'b0010
+`define LAYER1  4'b0011
+`define LAYER2  4'b0100
+`define LAYER3  4'b0101
+`define AFFINE  4'b0110
+`define ELU     4'b0111
+`define COMP    4'b1000
+`define LFIN    4'b1001
