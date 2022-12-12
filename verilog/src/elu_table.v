@@ -31,14 +31,14 @@ module elu_table #(
   );
 
   always @(posedge clk) begin
-    // address convert 1597=11'b110_00111101 -> 6.23828125
-    data2rom <= d[num +: awidth] + (d[num - 1] == 1) + 1597;
+    // address convert 1596=11'b110_00111100 -> 6.234375
+    data2rom <= d[num +: awidth] + (d[num - 1] == 1) + 1596;
 
     data_delay1 <= d;
     data_delay2 <= data_delay1;
 
-    // d < -6.240234375. 1597.5*4=6390
-    if (data_delay2 < -6390) begin
+    // d < -6.234375. 1596*4=6384
+    if (data_delay2 < -6384) begin
       q <= {{`data_int{1'b1}}, {`data_dec{1'b0}}};  // -1 (ex. 18bit -> 11111111_0000000000)
     end
     // -6.240234375 =< d < 0
