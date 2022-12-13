@@ -20,7 +20,7 @@ module comparator_12 (
 
   generate
     genvar i;
-    for (i = 0; i < 6; i = i + 1) begin
+    for (i = 0; i < 6; i = i + 1) begin :comp_first
       reg [3:0] d1_num_temp = 2*i+1;
       reg [3:0] d2_num_temp = 2*i+2;
       comparator_2 comp_first (
@@ -34,7 +34,7 @@ module comparator_12 (
       );
     end
 
-    for (i = 0; i < 3; i = i + 1) begin
+    for (i = 0; i < 3; i = i + 1) begin :comp_second
       comparator_2 comp_second (
         .clk(clk),
         .d1_num(q_num_first[2*i]),
