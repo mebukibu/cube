@@ -34,7 +34,7 @@ module change_cube (
     end
   endgenerate
 
-  always @(posedge clk) begin
+  always @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
       for (i = 0; i < 12; i = i + 1) begin
         next_cp[i] <= 0;
