@@ -6,9 +6,11 @@ module main_tb ();
   reg rst_n;
   reg run;
   reg [120 - 1:0] d;
-  output wire q;
+  wire [3:0] addr;
+  wire [3:0] step;
+  wire q;
 
-  main main0 (clk, rst_n, run, d, q);
+  main main0 (clk, rst_n, run, d, addr, step, q);
 
   initial clk = 0;
   always #5 clk = ~clk;
