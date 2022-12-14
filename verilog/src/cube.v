@@ -29,7 +29,7 @@ module cube (
   // assign
   assign data2curr = store ? store_data : chngout;
   assign step = store_delay ? 3'b000 : d;
-  assign valid = (cs == `CB_FIN) ? 1'b1 : 1'b0;
+  assign valid = (store_delay | (cs == `CB_FIN)) ? 1'b1 : 1'b0;
   assign q = chngout;
 
   always @(posedge clk, negedge rst_n) begin
