@@ -2,9 +2,9 @@
 # so, this program generates instead.
 
 for i in range(32):
-  print('dot_channel #(')
+  print('dot_channel_' + str(i) + ' #(')
   print('  .filename("../data/data18/weight18_' + str(i) +'.txt")')
-  print(') dot_channel_inst_' + str(i) + ' (')
+  print(') dot_channel_' + str(i) + '_inst (')
   print('  .clk(clk),')
   print('  .rst_n(rst_n),')
   print('  .load(dc_start),')

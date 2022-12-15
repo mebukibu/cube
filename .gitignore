@@ -3,5 +3,4 @@ cube1
 cube2
 *.vcd
 *.bat
-for_vivado
 __pycache__
