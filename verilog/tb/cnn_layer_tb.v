@@ -8,13 +8,13 @@ module cnn_layer_tb ();
   reg rst_n;
   reg cnld;
   reg [3:0] cs_layer;
-  reg [32*3*4*`data_len - 1:0] d_af;
+  //reg [32*3*4*`data_len - 1:0] d_af;
   wire valid;
   wire [32*12*`data_len - 1:0] cnnout;
 
   // ports for buffer
   reg bfld;
-  reg [32*4 - 1:0] bufin;
+  reg [120 - 1:0] bufin;
   wire [32*3*4*`data_len - 1:0] bufout;
 
   // ports for elu
@@ -22,7 +22,7 @@ module cnn_layer_tb ();
   wire [32*12*`data_len - 1:0] q;
 
   cube_data_buffer buf0 (.clk(clk), .rst_n(rst_n), .load(bfld), .d(bufin), .q(bufout));
-  cnn_layer cnn_layer0  (.clk(clk), .rst_n(rst_n), .load(cnld), .cs_layer(cs_layer), .d(bufout), .d_affine(d_af), .valid(valid), .q(cnnout));
+  cnn_layer cnn_layer0  (.clk(clk), .rst_n(rst_n), .load(cnld), .cs_layer(cs_layer), .d(bufout), .valid(valid), .q(cnnout));
   elu_layer elu_layer0  (.clk(clk), .load(valid), .d(cnnout), .valid(eluvld), .q(q));
 
   initial clk = 0;
@@ -30,12 +30,12 @@ module cnn_layer_tb ();
 
   initial begin
     $dumpvars;
-    rst_n=0; bfld=0; cnld=0; cs_layer=`LIDLE; bufin=128'h82a54907b1630900184e800098f; d_af=0; #10
+    rst_n=0; bfld=0; cnld=0; cs_layer=`LIDLE; bufin=120'h82a54907b1630900184e800098f; #10
     rst_n=1; #10
     bfld=1; #10
     cnld=1; cs_layer=`LAYER0; #10
-    #10000
-    $display("%b", q);
+    #12000
+    //$display("%b", q);
     $finish;
   end
 
