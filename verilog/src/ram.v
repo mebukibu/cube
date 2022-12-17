@@ -1,9 +1,9 @@
 `include "../data/num_data.v"
 
 module ram #(
-    parameter integer dwidth = `data_len,
-    parameter integer awidth = 12,              // 2^12 = 4096 > 12*288 = 3456
-    parameter integer words = 12*288
+    parameter integer dwidth = 9*`data_len,
+    parameter integer awidth = 9,              // 2^12 = 4096 > 12*288 = 3456
+    parameter integer words = 12*32
   ) (
     input wire clk,
     input wire load,
