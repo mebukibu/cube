@@ -5,8 +5,9 @@ module dot (
     input wire rst_n,
     input wire load,
     input wire [3:0] cs,
-    input wire [12*288*`data_len - 1:0] d,
+    input wire [9*`data_len - 1:0] d,
     output reg valid,
+    output reg [8:0] addr,
     output wire [12*32*`data_len - 1:0] q
   );
 
@@ -17,22 +18,62 @@ module dot (
   wire [32*`data_len - 1:0] dcout;
 
   // use in this module
-  wire [288*`data_len - 1:0] data288 [0:11];
   reg [32*`data_len - 1:0] q_temp [0:11];
   reg [3:0] index;
 
+  reg [12:0] data_index;
+  reg [5:0] line_cnt;
+  reg fetch_end;
+
   generate
     genvar i, j;
-    for (i = 0; i < 12; i = i + 1) begin
-      assign data288[i] = d[288*i*`data_len +: 288*`data_len];
-    end
-
     for (i = 0; i < 32; i = i + 1) begin
       for (j = 0; j < 12; j = j + 1) begin
         assign q[(12*i+j)*`data_len +: `data_len] = q_temp[j][i*`data_len +: `data_len];
       end
     end
   endgenerate
+
+  // fetch 288*`data_len data from ram
+  always @(posedge clk) begin
+    if (load) begin
+      if (!dc_start) begin
+        if (line_cnt == 0) begin
+          addr <= addr + 1;
+          line_cnt <= line_cnt + 1;
+        end
+        else if (line_cnt < 31) begin
+          addr <= addr + 1;
+          line_cnt <= line_cnt + 1;
+          data_index <= data_index + 9*`data_len;
+        end
+        else if (line_cnt == 31) begin
+          line_cnt <= line_cnt + 1;
+          data_index <= data_index + 9*`data_len;
+        end
+        else if (line_cnt == 32) begin
+          fetch_end <= 1;
+        end
+      end
+      else if (&dc_valid) begin
+        addr <= addr + 1;
+        data_index <= 0;
+      end
+      else begin
+        fetch_end <= 0;
+        line_cnt <= 0;
+      end
+    end
+    else begin
+      fetch_end <= 0;
+      addr <= 0;
+      line_cnt <= 0;
+      data_index <= 0;
+    end
+
+    data2dc[data_index +: 9*`data_len] <= d;
+
+  end
 
   always @(posedge clk) begin
     if (load) begin
@@ -47,9 +88,8 @@ module dot (
         valid <= 1;
         dc_start <= 0;
       end
-      else begin
+      else if (fetch_end) begin
         dc_start <= 1;
-        data2dc <= data288[index];
       end
     end
     else begin
@@ -476,5 +516,4 @@ module dot (
     .q(dcout[31*`data_len +: `data_len])
   );
 
- 
 endmodule

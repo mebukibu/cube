@@ -20,7 +20,6 @@ module network (
   //ports for cnn_layer
   wire load2cnn;
   wire [32*3*4*`data_len - 1:0] data2cnn;
-  wire [12*288*`data_len - 1:0] affine2cnn;
   wire cnn_valid;
   wire [32*12*`data_len - 1:0] cnnout;
 
@@ -49,10 +48,6 @@ module network (
   // assign for cnn_layer
   assign load2cnn = (cs == `LAYER0) | (cs == `LAYER1) | (cs == `LAYER2) | (cs == `LAYER3) | (cs == `AFFINE);
   assign data2cnn = (cs == `LAYER0) ? bufout : eluout;
-  assign affine2cnn = {
-    {10*288*`data_len{1'b0}},
-    {96*`data_len{1'b0}}, eluout[32*6*`data_len +: 192*`data_len],
-    {96*`data_len{1'b0}}, eluout[0 +: 32*6*`data_len]};
 
   // assign for output
   assign valid = (cs == `LFIN);
@@ -88,7 +83,6 @@ module network (
     .load(load2cnn),
     .cs_layer(cs),
     .d(data2cnn),
-    .d_affine(affine2cnn),
     .valid(cnn_valid),
     .q(cnnout)
   );
