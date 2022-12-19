@@ -10,14 +10,22 @@ module affine_store (
   output reg [9*`data_len - 1:0] q
 );
 
+  reg init;
+
   always @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
+      init <= 0;
       valid <= 0;
       addr <= 0;
       q <= 0;
     end
     else if (load) begin
-      if (!valid) begin
+      if (init) begin
+        init <= 0;
+        addr <= 0;
+        q <= d[0*9*`data_len +: 9*`data_len];
+      end
+      else if (!valid) begin
         addr <= addr + 1;
         if (addr == 0) q <= d[1*9*`data_len +: 9*`data_len];
         if (addr == 1) q <= d[2*9*`data_len +: 9*`data_len];
@@ -86,9 +94,10 @@ module affine_store (
       end
     end
     else begin
+      init <= 1;
       valid <= 0;
       addr <= 0;
-      q <= d[0*9*`data_len +: 9*`data_len];
+      q <= 0;
     end
   end
   

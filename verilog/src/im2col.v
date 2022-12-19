@@ -10,14 +10,22 @@ module im2col (
     output reg [9*`data_len - 1:0] q
   );
 
+  reg init;
+
   always @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
+      init <= 0;
       valid <= 0;
       addr <= 0;
       q <= 0;
     end
     else if (load) begin
-      if (!valid) begin
+      if (init) begin
+        init <= 0;
+        addr <= 0;
+        q <= {d[12*`data_len +: 3*`data_len], d[6*`data_len +: 3*`data_len], d[0*`data_len +: 3*`data_len]};
+      end
+      else if (!valid) begin
         addr <= addr + 1;
         if (addr == 0) q <= {d[42*`data_len +: 3*`data_len], d[36*`data_len +: 3*`data_len], d[30*`data_len +: 3*`data_len]};
         if (addr == 1) q <= {d[72*`data_len +: 3*`data_len], d[66*`data_len +: 3*`data_len], d[60*`data_len +: 3*`data_len]};
@@ -406,9 +414,10 @@ module im2col (
       end
     end
     else begin
+      init <= 1;
       valid <= 0;
       addr <= 0;
-      q <= {d[12*`data_len +: 3*`data_len], d[6*`data_len +: 3*`data_len], d[0*`data_len +: 3*`data_len]};
+      q <= 0;
     end
   end
   
