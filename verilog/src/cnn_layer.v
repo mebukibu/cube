@@ -26,25 +26,33 @@ module cnn_layer (
 
   // ports for ram
   wire [8:0] ram_addr;
+  wire [9*`data_len - 1:0] data2ram;
   wire [9*`data_len - 1:0] ramout;
 
   // ports for dot
   wire dot_valid;
-  //wire [12*288*`data_len - 1:0] data2dot;
   wire [8:0] dot_addr;
   wire [12*32*`data_len - 1:0] dotout;
+
+  // ports for affine_store
+  wire aff_valid;
+  wire [8:0] aff_addr;
+  wire [9*`data_len - 1:0] affout;
 
   // assign
   assign load2state = (cs_calc == `CIDL) ? 1'b0 : 1'bZ;
   assign load2state = (cs_calc == `ZPAD) ? 1'b1 : 1'bZ;
-  assign load2state = (cs_calc == `IM2C) ? im2c_valid : 1'bZ;
+  assign load2state = (cs_calc == `IM2C) ? im2c_valid | aff_valid : 1'bZ;
   assign load2state = (cs_calc == `DOTP) ? dot_valid : 1'bZ;
   assign load2state = (cs_calc == `BIAS) ? 1'b1 : 1'bZ;
   assign load2state = (cs_calc == `FINI) ? 1'b0 : 1'bZ;
 
-  //assign data2dot = (cs_layer == `AFFINE) ? d_affine : im2cout;
-  assign ram_addr = (cs_calc == `IM2C) ? im2c_addr : 9'hZZZ;
+  assign ram_addr = (cs_layer != `AFFINE) && (cs_calc == `IM2C) ? im2c_addr : 9'hZZZ;
+  assign ram_addr = (cs_layer == `AFFINE) && (cs_calc == `IM2C) ? aff_addr : 9'hZZZ;
   assign ram_addr = (cs_calc == `DOTP) ? dot_addr : 9'hZZZ;
+
+  assign data2ram = (cs_layer == `AFFINE) ? affout : im2cout;
+
   assign valid = (cs_calc == `FINI);
 
   // instance
@@ -78,7 +86,7 @@ module cnn_layer (
     .clk(clk),
     .load(cs_calc == `IM2C),
     .addr(ram_addr),
-    .d(im2cout),
+    .d(data2ram),
     .q(ramout)
   );
 
@@ -100,6 +108,16 @@ module cnn_layer (
     .cs(cs_layer),
     .d(dotout),
     .q(q)
+  );
+
+  affine_store affine_store_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .load(cs_layer == `AFFINE && cs_calc == `IM2C),
+    .d(d),
+    .valid(aff_valid),
+    .addr(aff_addr),
+    .q(affout)
   );
   
 endmodule

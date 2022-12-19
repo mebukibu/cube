@@ -57,11 +57,11 @@ module dot (
       end
       else if (&dc_valid) begin
         addr <= addr + 1;
+        data_index <= 0;
       end
       else begin
         fetch_end <= 0;
         line_cnt <= 0;
-        data_index <= 0;
       end
     end
     else begin
