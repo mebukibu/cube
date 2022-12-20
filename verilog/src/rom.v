@@ -2,9 +2,9 @@
 
 module rom #(
     parameter filename = "../data/data18/weight18_0.txt",
-    parameter integer dwidth = `data_len,
-    parameter integer awidth = 11,          // 2^11 = 2048 > 5*288 = 1440
-    parameter integer words = 5*288
+    parameter integer dwidth = 9*`data_len,
+    parameter integer awidth = 8,          // 2^8 = 256 > 5*32 = 160
+    parameter integer words = 5*32
   ) (
     input wire clk,
     input wire [awidth - 1:0] addr,

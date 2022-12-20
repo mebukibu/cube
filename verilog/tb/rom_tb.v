@@ -4,10 +4,10 @@
 module rom_tb ();
 
   reg clk;
-  reg [11 - 1:0] addr;
-  wire [`data_len - 1:0] q;
+  reg [8 - 1:0] addr;
+  wire [9*`data_len - 1:0] q;
 
-  rom #("../data/data18/weight18_0.txt") rom0 (clk, addr, q);
+  rom #("../data/data162/weight162_0.txt") rom0 (clk, addr, q);
   //rom #(filename=$sformatf("../data/data18/weight18_%0d.txt", 0)) rom0 (clk, addr, q);
 
   initial clk = 0;
@@ -22,7 +22,7 @@ module rom_tb ();
     #51
     addr = 0; #100
     addr = 1; #100
-    addr = 1439; #100
+    addr = 159; #100
     #100
     $finish;
   end
