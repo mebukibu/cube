@@ -17,7 +17,7 @@ module network_tb ();
     rst_n=0; load=0; d=120'h82a54907b1630900184e800098f; #10
     rst_n=1; #10
     load=1; #10
-    #60000
+    #70000
     $display("%b", q);
     $finish;
   end

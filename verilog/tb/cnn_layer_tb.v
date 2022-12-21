@@ -34,7 +34,7 @@ module cnn_layer_tb ();
     rst_n=1; #10
     bfld=1; #10
     cnld=1; cs_layer=`LAYER0; #10
-    #12000
+    #15000
     //$display("%b", q);
     $finish;
   end

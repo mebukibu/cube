@@ -83,7 +83,6 @@ module dot (
       fetch_cnt <= 0;
       addr <= 0;
       data_index <= 0;
-      dc_phase <= 0;
     end
     data2dc[data_index +: 9*`data_len] <= d;
   end
