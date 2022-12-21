@@ -39,11 +39,11 @@ module dot_tb ();
     $dumpvars;
     rst_n=0; im_load=0; ram_load=0; dot_load=0; cs=`LIDLE; d={32*5*6{18'b00_0000_01_00_0000_0000}}; #10
     rst_n=1; #10
-    cs=`LAYER0; #10
+    cs=`LAYER1; #10
     im_load=1; ram_load=1;#10
     #4000
     im_load=0; ram_load=0; dot_load=1; #10
-    #6000
+    #11000
     $finish;
   end
 

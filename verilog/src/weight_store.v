@@ -62,6 +62,7 @@ module weight_store #(
 
   always @(posedge clk) begin
     if (load) begin
+      q[q_index +: 9*`data_len] <= romout;
       if (init) begin
         init <= 0;
         valid <= 0;
@@ -89,14 +90,11 @@ module weight_store #(
     end
     else begin
       init <= 1;
-      valid <= 0;
+      //valid <= 0;
       rom_addr <= offset;
       addr_cnt <= 0;
       q_index <= 0;
     end
-
-    q[q_index +: 9*`data_len] <= romout;
-
   end
   
   
