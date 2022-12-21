@@ -2,72 +2,100 @@
 `include "state_layer_data.v"
 
 module weight_store_5 #(
-    parameter filename = "../data/data18/weight18_0.txt"
+    parameter filename = "../data/data162/weight162_0.txt"
   ) (
     input wire clk,
+    input wire load,
     input wire [3:0] cs,
+    input wire [2:0] phase,
     output reg valid,
-    output wire [288*`data_len - 1:0] q
+    output reg [36*`data_len - 1:0] q
   );
 
-  reg [10:0] addr;
-  wire [`data_len - 1:0] romout;
+  // ports for rom
+  reg [7:0] rom_addr;
+  wire [9*`data_len - 1:0] romout;
 
+  // use in this module
   reg init;
-  reg [2:0] cs_tmp;
-  reg [8:0] cnt;
-  reg [8:0] index;
-
-  reg [`data_len - 1:0] weight [0:288 - 1];
+  wire [7:0] offset;
+  reg [7:0] cs_offset;
+  reg [4:0] phase_offset;
+  reg [2:0] addr_cnt;
+  reg [9:0] q_index;
+  
+  // assign
+  assign offset = cs_offset + phase_offset;
 
   w_rom_5 #(
     .filename(filename)
   ) w_rom_5_inst (
     .clk(clk),
-    .addr(addr),
+    .addr(rom_addr),
     .q(romout)
-  );  
+  );
 
-  // if cs change, init = 1. not init = 0.
-  always @(posedge clk) begin
-    cs_tmp <= cs;
-    if (cs != cs_tmp) init <= 1;
-    else init <= 0;    
+  always @(cs) begin
+    case (cs)
+      `LAYER0 : cs_offset = 0*32;
+      `LAYER1 : cs_offset = 1*32;
+      `LAYER2 : cs_offset = 2*32;
+      `LAYER3 : cs_offset = 3*32;
+      `AFFINE : cs_offset = 4*32;      
+      default : cs_offset = 8'hXX;
+    endcase    
+  end
+
+  always @(phase) begin
+    case (phase)
+      3'b000 : phase_offset = 0*4;
+      3'b001 : phase_offset = 1*4;
+      3'b010 : phase_offset = 2*4;
+      3'b011 : phase_offset = 3*4;
+      3'b100 : phase_offset = 4*4;
+      3'b101 : phase_offset = 5*4;
+      3'b110 : phase_offset = 6*4;
+      3'b111 : phase_offset = 7*4;
+      default: phase_offset = 3'bXXX;
+    endcase
   end
 
   always @(posedge clk) begin
-    if (init) begin
-      valid <= 0;
-      index <= 0;
-      cnt <= 0;
-      if      (cs == `LAYER0) addr <= 0;
-      else if (cs == `LAYER1) addr <= 288;
-      else if (cs == `LAYER2) addr <= 2*288;
-      else if (cs == `LAYER3) addr <= 3*288;
-      else if (cs == `AFFINE) addr <= 4*288;
-      else addr <= 11'hXXX;
+    if (load) begin
+      q[q_index +: 9*`data_len] <= romout;
+      if (init) begin
+        init <= 0;
+        valid <= 0;
+        rom_addr <= offset;
+        addr_cnt <= 0;
+        q_index <= 0;
+      end
+      else if (addr_cnt == 0) begin
+        rom_addr <= rom_addr + 1;
+        addr_cnt <= addr_cnt + 1;
+        q_index <= 0;
+      end
+      else if (addr_cnt < 3) begin
+        rom_addr <= rom_addr + 1;
+        addr_cnt <= addr_cnt + 1;
+        q_index <= q_index + 9*`data_len;
+      end
+      else if (addr_cnt == 3) begin
+        addr_cnt <= addr_cnt + 1;
+        q_index <= q_index + 9*`data_len;
+      end
+      else if (addr_cnt == 4) begin
+        valid <= 1;
+      end
     end
-    else if (cnt == 0) begin
-      cnt <= cnt + 1;
-      addr <= addr + 1;      
+    else begin
+      init <= 1;
+      //valid <= 0;
+      rom_addr <= offset;
+      addr_cnt <= 0;
+      q_index <= 0;
     end
-    else if (cnt < 288 + 1) begin
-      index <= index + 1;
-      cnt <= cnt + 1;
-      addr <= addr + 1;
-    end
-    else if (cnt == 288 + 1) begin
-      valid <= 1;
-      cnt <= cnt + 1;
-    end
-    weight[index] <= romout;
   end
-
-  generate
-    genvar i;
-    for (i = 0; i < 288; i = i + 1) begin
-      assign q[i*`data_len +: `data_len] = weight[i];
-    end
-  endgenerate
+  
   
 endmodule

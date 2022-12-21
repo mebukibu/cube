@@ -40,12 +40,12 @@ module cnn_layer (
   wire [9*`data_len - 1:0] affout;
 
   // assign
-  assign load2state = (cs_calc == `CIDL) ? 1'b0 : 1'bZ;
-  assign load2state = (cs_calc == `ZPAD) ? 1'b1 : 1'bZ;
-  assign load2state = (cs_calc == `IM2C) ? im2c_valid | aff_valid : 1'bZ;
-  assign load2state = (cs_calc == `DOTP) ? dot_valid : 1'bZ;
-  assign load2state = (cs_calc == `BIAS) ? 1'b1 : 1'bZ;
-  assign load2state = (cs_calc == `FINI) ? 1'b0 : 1'bZ;
+  assign load2state = (cs_calc == `CIDL) & 1'b0 |
+                      (cs_calc == `ZPAD) & 1'b1 |
+                      (cs_calc == `IM2C) & (im2c_valid | aff_valid) |
+                      (cs_calc == `DOTP) & dot_valid |
+                      (cs_calc == `BIAS) & 1'b1 |
+                      (cs_calc == `FINI) & 1'b0;
 
   assign ram_addr = (cs_layer != `AFFINE) && (cs_calc == `IM2C) ? im2c_addr : 9'hZZZ;
   assign ram_addr = (cs_layer == `AFFINE) && (cs_calc == `IM2C) ? aff_addr : 9'hZZZ;

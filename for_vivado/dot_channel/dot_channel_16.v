@@ -1,60 +1,49 @@
 `include "num_data.v"
 
 module dot_channel_16 #(
-    parameter filename = "../data/data18/weight18_0.txt"
+    parameter filename = "../data/data162/weight162_0.txt"
   ) (
     input wire clk,
     input wire rst_n,
-    input wire load,
+    input wire dc_load,
+    input wire ws_load,
     input wire [3:0] cs,
-    input wire [288*`data_len - 1:0] d,
+    input wire [2:0] phase,
+    input wire [36*`data_len - 1:0] d,
     output reg valid,
     output wire [`data_len - 1:0] q
   );
 
   // ports for weight_store
   wire ws_valid;
-  wire [288*`data_len - 1:0] wsout;
-
-  // ports for inner_288
+  wire [36*`data_len - 1:0] wsout;
 
   // use in this module
-  reg load_temp;
-  reg init;
   reg [3:0] inner_cnt;
 
   weight_store_16 #(
     .filename(filename)
   ) weight_store_16_inst (
     .clk(clk),
+    .load(ws_load),
     .cs(cs),
+    .phase(phase),
     .valid(ws_valid),
     .q(wsout)
   );
 
-  inner_288 inner_288_inst (
+  inner_36 inner_36_inst (
     .clk(clk),
     .rst_n(rst_n),
-    .load(load),
+    .load(dc_load),
     .d1(d),
     .d2(wsout),
     .q(q)
   );
 
-  // if load changes 0 to 1, init = 1. not init = 0.
   always @(posedge clk) begin
-    load_temp <= load;
-    if (load == 1 && load_temp == 0) init <= 1;
-    else init <= 0;
-  end
-
-  always @(posedge clk) begin
-    if (init) begin
-      valid = 0;
-      inner_cnt <= 0;
-    end
-    else if (ws_valid && load) begin
-      if (inner_cnt == 11) begin
+    if (ws_valid && dc_load) begin
+      if (inner_cnt == 2) begin
         valid <= 1;
       end
       else begin

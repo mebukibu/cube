@@ -2,7 +2,7 @@
 # so, this program generates instead.
 
 for i in range(32):
-  print('dot_channel #(')
+  print('dot_channel_' + str(i) +' #(')
   print('  .filename("../data/data162/weight162_' + str(i) +'.txt")')
   print(') dot_channel_' + str(i) + '_inst (')
   print('  .clk(clk),')

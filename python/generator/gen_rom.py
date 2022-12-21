@@ -1,6 +1,6 @@
 # generate rom module's initial valie & assign 
 
-DATA_ROOT = '../../verilog/data/data18/'
+DATA_ROOT = '../../verilog/data/data162/'
 SRC_DIR = '../../for_vivado/'
 
 def gen_mem(mem, text, tab):
@@ -21,7 +21,7 @@ def write_mem(file, mem, text, tab):
     n_tab += '  '
   with open(DATA_ROOT + text, 'r') as file_data:
     for line in file_data:
-      file.write(n_tab + mem + '[' + str(addr) + '] = 18\'b' + line[:-1] + ';' + '\n')
+      file.write(n_tab + mem + '[' + str(addr) + '] = 162\'b' + line[:-1] + ';' + '\n')
       addr += 1
   return
 
@@ -39,7 +39,7 @@ def gen_rom(o_name, i_name):
 
 def gen_w_rom():
   for i in range(32):
-    gen_rom('w_rom_' + str(i), 'weight18_' + str(i))
+    gen_rom('w_rom_' + str(i), 'weight162_' + str(i))
   return
 
 def gen_ws():
@@ -76,7 +76,7 @@ def gen_dc():
 
 if __name__ == '__main__':
   #gen_mem('bias', 'bias18_data.txt', 2)
-  gen_rom('elu_rom', 'eLU_table')
+  #gen_rom('elu_rom', 'eLU_table')
   gen_w_rom()
   gen_ws()
   gen_dc()
