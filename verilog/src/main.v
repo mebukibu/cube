@@ -33,7 +33,7 @@ module main (
                       (cs == `NETWORK) & network_valid |
                       (cs == `CUBE)    & cube_valid |
                       (cs == `FINISH)  & 1'b0;
-  assign q = cube_fin;
+  assign q = (cs == `FINISH);
 
   // slv_reg writer
   always @(posedge clk, negedge rst_n) begin

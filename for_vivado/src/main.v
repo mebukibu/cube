@@ -33,7 +33,7 @@ module main (
   assign load2state = (cs == `NETWORK) ? network_valid : 1'bZ;
   assign load2state = (cs == `CUBE)    ? cube_valid : 1'bZ;
   assign load2state = (cs == `FINISH)  ? 1'b0 : 1'bZ;
-  assign q = cube_fin;
+  assign q = (cs == `FINISH);
 
   // slv_reg writer
   always @(posedge clk, negedge rst_n) begin

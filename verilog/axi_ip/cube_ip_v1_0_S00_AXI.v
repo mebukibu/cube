@@ -147,7 +147,7 @@
 	
 	// divider
 	always @(posedge S_AXI_ACLK) begin
-	   if (rst_n) divide_cnt <= 0;
+	   if (!rst_n) divide_cnt <= 0;
 	   else divide_cnt <= divide_cnt + 1;
 	   clk <= divide_cnt[3];
 	end
