@@ -24,7 +24,7 @@ module dot_channel_tb ();
     rst_n=1; #10
     cs=`LAYER0; ws_load=1; phase=0; #10
     dc_load=1; #10
-    #100
+    #300
     $finish;
   end
 

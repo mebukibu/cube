@@ -43,7 +43,7 @@ module dot_tb ();
     im_load=1; ram_load=1;#10
     #4000
     im_load=0; ram_load=0; dot_load=1; #10
-    #11000
+    #20000
     $finish;
   end
 
