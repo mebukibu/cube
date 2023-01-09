@@ -1,6 +1,6 @@
-`include "../data/num_data.v"
-`include "../data/state_calc_data.v"
-`include "../data/state_layer_data.v"
+`include "num_data.v"
+`include "state_calc_data.v"
+`include "state_layer_data.v"
 
 module cnn_layer (
     input wire clk,

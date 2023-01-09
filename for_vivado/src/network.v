@@ -1,5 +1,5 @@
-`include "../data/num_data.v"
-`include "../data/state_layer_data.v"
+`include "num_data.v"
+`include "state_layer_data.v"
 
 module network (
     input wire clk,
