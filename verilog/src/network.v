@@ -47,7 +47,8 @@ module network (
 
   // assign for cnn_layer
   assign load2cnn = (cs == `LAYER0) | (cs == `LAYER1) | (cs == `LAYER2) | (cs == `LAYER3) | (cs == `AFFINE);
-  assign data2cnn = (cs == `LAYER0) ? bufout : eluout;
+  assign data2cnn = {32*3*4*`data_len{cs == `LAYER0}} & bufout |
+                    {32*3*4*`data_len{cs != `LAYER0}} & eluout;
 
   // assign for output
   assign valid = (cs == `LFIN);
