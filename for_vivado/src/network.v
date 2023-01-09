@@ -1,5 +1,5 @@
-`include "num_data.v"
-`include "state_layer_data.v"
+`include "../data/num_data.v"
+`include "../data/state_layer_data.v"
 
 module network (
     input wire clk,
@@ -34,20 +34,21 @@ module network (
 
 
   // assign for state_layer
-  assign load2state = (cs == `LIDLE)  ? 1'b0 : 1'bZ;
-  assign load2state = (cs == `BUFFER) ? 1'b1 : 1'bZ;
-  assign load2state = (cs == `LAYER0) ? cnn_valid : 1'bZ;
-  assign load2state = (cs == `LAYER1) ? cnn_valid : 1'bZ;
-  assign load2state = (cs == `LAYER2) ? cnn_valid : 1'bZ;
-  assign load2state = (cs == `LAYER3) ? cnn_valid : 1'bZ;
-  assign load2state = (cs == `AFFINE) ? cnn_valid : 1'bZ;
-  assign load2state = (cs == `ELU   ) ? elu_valid : 1'bZ;
-  assign load2state = (cs == `COMP  ) ? comp_valid : 1'bZ;
-  assign load2state = (cs == `LFIN  ) ? 1'b0 : 1'bZ;
+  assign load2state = (cs == `LIDLE)  & 1'b0 |
+                      (cs == `BUFFER) & 1'b1 |
+                      (cs == `LAYER0) & cnn_valid |
+                      (cs == `LAYER1) & cnn_valid |
+                      (cs == `LAYER2) & cnn_valid |
+                      (cs == `LAYER3) & cnn_valid |
+                      (cs == `AFFINE) & cnn_valid |
+                      (cs == `ELU   ) & elu_valid |
+                      (cs == `COMP  ) & comp_valid |
+                      (cs == `LFIN  ) & 1'b0;
 
   // assign for cnn_layer
   assign load2cnn = (cs == `LAYER0) | (cs == `LAYER1) | (cs == `LAYER2) | (cs == `LAYER3) | (cs == `AFFINE);
-  assign data2cnn = (cs == `LAYER0) ? bufout : eluout;
+  assign data2cnn = {32*3*4*`data_len{cs == `LAYER0}} & bufout |
+                    {32*3*4*`data_len{cs != `LAYER0}} & eluout;
 
   // assign for output
   assign valid = (cs == `LFIN);

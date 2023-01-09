@@ -1,6 +1,6 @@
-`include "num_data.v"
-`include "state_calc_data.v"
-`include "state_layer_data.v"
+`include "../data/num_data.v"
+`include "../data/state_calc_data.v"
+`include "../data/state_layer_data.v"
 
 module cnn_layer (
     input wire clk,
@@ -47,11 +47,12 @@ module cnn_layer (
                       (cs_calc == `BIAS) & 1'b1 |
                       (cs_calc == `FINI) & 1'b0;
 
-  assign ram_addr = (cs_layer != `AFFINE) && (cs_calc == `IM2C) ? im2c_addr : 9'hZZZ;
-  assign ram_addr = (cs_layer == `AFFINE) && (cs_calc == `IM2C) ? aff_addr : 9'hZZZ;
-  assign ram_addr = (cs_calc == `DOTP) ? dot_addr : 9'hZZZ;
+  assign ram_addr = {9{(cs_layer != `AFFINE) & (cs_calc == `IM2C)}} & im2c_addr |
+                    {9{(cs_layer == `AFFINE) & (cs_calc == `IM2C)}} & aff_addr |
+                    {9{(cs_calc == `DOTP)}} & dot_addr;
 
-  assign data2ram = (cs_layer == `AFFINE) ? affout : im2cout;
+  assign data2ram = {9*`data_len{cs_layer == `AFFINE}} & affout |
+                    {9*`data_len{cs_layer != `AFFINE}} & im2cout;
 
   assign valid = (cs_calc == `FINI);
 

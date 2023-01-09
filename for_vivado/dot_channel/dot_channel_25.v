@@ -43,7 +43,7 @@ module dot_channel_25 #(
 
   always @(posedge clk) begin
     if (ws_valid && dc_load) begin
-      if (inner_cnt == 2) begin
+      if (inner_cnt == 5) begin
         valid <= 1;
       end
       else begin

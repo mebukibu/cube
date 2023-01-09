@@ -28,11 +28,11 @@ module main (
   reg solve_fail;
 
   // assign
-  assign load2state = (cs == `IDLE)    ? 1'b0 : 1'bZ;
-  assign load2state = (cs == `STORE)   ? cube_valid : 1'bZ;
-  assign load2state = (cs == `NETWORK) ? network_valid : 1'bZ;
-  assign load2state = (cs == `CUBE)    ? cube_valid : 1'bZ;
-  assign load2state = (cs == `FINISH)  ? 1'b0 : 1'bZ;
+  assign load2state = (cs == `IDLE)    & 1'b0 |
+                      (cs == `STORE)   & cube_valid |
+                      (cs == `NETWORK) & network_valid |
+                      (cs == `CUBE)    & cube_valid |
+                      (cs == `FINISH)  & 1'b0;
   assign q = (cs == `FINISH);
 
   // slv_reg writer
