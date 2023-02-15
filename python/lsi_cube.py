@@ -73,19 +73,29 @@ def predict(cube, weight, bias):
   return out.argmax()
 
 def main():
-  first_state = [
+  first_state = None
+  """[
       [[7, 1, 6,  4], [0, 0, 0, 0], [0,  5, 3, 2]],
       [[0, 2, 1,  0], [0, 0, 0, 0], [1,  2, 0, 0]],
       [[3, 6, 1, 11], [7, 0, 9, 4], [5, 10, 2, 8]],
       [[0, 0, 0,  0], [0, 0, 0, 0], [0,  0, 0, 0]]
-    ]
+    ]"""
 
   weight = read_weight()
   bias = read_bias()
   #print(min(np.array(weight[4]).flatten()))
 
   cube = cb.Cube(first_state)
+  """
+  cube.move(0)
+  print(np.array(cube.state))
+  next_step = predict(cube, weight, bias)
+  print(next_step)
+  cube.move(next_step)
+  print(cube.check())
+  """
 
+  """
   for j in range(30):
     next_step = predict(cube, weight, bias)
     print('step = ' + str(next_step + 1))
@@ -93,11 +103,12 @@ def main():
     if cube.check():
       print('success')
       break
-
   """
+
+  
   cnt = 0
   for i in range(1000):
-    cube.reset(random.randint(5, 30))
+    cube.reset(3)
     for j in range(30):
       next_step = predict(cube, weight, bias)
       print('step = ' + str(next_step + 1))
@@ -107,7 +118,7 @@ def main():
         cnt = cnt + 1
         break
   print(cnt)
-  """
+  
   
   
 
