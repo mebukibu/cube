@@ -12,7 +12,7 @@ module main_tb ();
   wire q;
 
   wire [3:0] cs_out;
-  wire [32*5*6*`data_len - 1:0] data_out;
+  wire [12*288*`data_len - 1:0] data_out;
 
   main main0 (clk, rst_n, run, d, addr, step, q, cs_out, data_out);
 

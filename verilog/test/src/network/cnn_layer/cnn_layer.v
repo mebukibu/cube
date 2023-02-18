@@ -12,7 +12,7 @@ module cnn_layer (
     output wire [32*12*`data_len - 1:0] q,
     //debug ports
     output wire [3:0] cs_out,
-    output wire [32*5*6*`data_len - 1:0] data_out
+    output wire [12*288*`data_len - 1:0] data_out
   );
 
   // ports for state_calc
@@ -23,14 +23,14 @@ module cnn_layer (
   wire [32*5*6*`data_len - 1:0] zpadout;
 
   // port for im2col
-  reg im2c_valid;
-  reg [8:0] im2c_addr;
-  reg [9*`data_len - 1:0] im2cout;
+  //reg im2c_valid;
+  //reg [8:0] im2c_addr;
+  wire [12*288*`data_len - 1:0] im2cout;
 
   // ports for ram
-  wire [8:0] ram_addr;
-  wire [9*`data_len - 1:0] data2ram;
-  reg [9*`data_len - 1:0] ramout;
+  //wire [8:0] ram_addr;
+  //wire [9*`data_len - 1:0] data2ram;
+  //reg [9*`data_len - 1:0] ramout;
 
   // ports for dot
   reg dot_valid;
@@ -45,24 +45,24 @@ module cnn_layer (
   // assign
   assign load2state = (cs_calc == `CIDL) & 1'b0 |
                       (cs_calc == `ZPAD) & 1'b1 |
-                      (cs_calc == `IM2C) & (im2c_valid | aff_valid) |
+                      (cs_calc == `IM2C) & 1'b1 | // (im2c_valid | aff_valid) |
                       (cs_calc == `DOTP) & dot_valid |
                       (cs_calc == `BIAS) & 1'b1 |
                       (cs_calc == `FINI) & 1'b0;
 
-  assign ram_addr = {9{(cs_layer != `AFFINE) & (cs_calc == `IM2C)}} & im2c_addr |
-                    {9{(cs_layer == `AFFINE) & (cs_calc == `IM2C)}} & aff_addr |
-                    {9{(cs_calc == `DOTP)}} & dot_addr;
+  // assign ram_addr = {9{(cs_layer != `AFFINE) & (cs_calc == `IM2C)}} & im2c_addr |
+  //                   {9{(cs_layer == `AFFINE) & (cs_calc == `IM2C)}} & aff_addr |
+  //                   {9{(cs_calc == `DOTP)}} & dot_addr;
 
-  assign data2ram = {9*`data_len{cs_layer == `AFFINE}} & affout |
-                    {9*`data_len{cs_layer != `AFFINE}} & im2cout;
+  // assign data2ram = {9*`data_len{cs_layer == `AFFINE}} & affout |
+  //                   {9*`data_len{cs_layer != `AFFINE}} & im2cout;
 
   assign valid = (cs_calc == `FINI);
 
   // assign debug ports
   assign q = 0;
   assign cs_out = {1'b0, cs_calc};
-  assign data_out = zpadout;
+  assign data_out = im2cout;
 
   // instance
   state_calc state_calc_inst (
@@ -81,15 +81,15 @@ module cnn_layer (
     .q(zpadout)
   );
 
-  // im2col im2col_inst (
-  //   .clk(clk),
-  //   .rst_n(rst_n),
-  //   .load(cs_calc == `IM2C),
-  //   .d(zpadout),
-  //   .valid(im2c_valid),
-  //   .addr(im2c_addr),
-  //   .q(im2cout)
-  // );
+  im2col im2col_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .load(cs_calc == `IM2C),
+    .d(zpadout),
+    //.valid(im2c_valid),
+    //.addr(im2c_addr),
+    .q(im2cout)
+  );
 
   // ram ram_inst (
   //   .clk(clk),
@@ -130,11 +130,11 @@ module cnn_layer (
   // );
 
   initial begin
-    im2c_valid = 0;
-    im2c_addr = 0;
-    im2cout = 0;
+    //im2c_valid = 0;
+    //im2c_addr = 0;
+    //im2cout = 0;
 
-    ramout = 0;
+    //ramout = 0;
 
     dot_valid = 0;
     dot_addr = 0;

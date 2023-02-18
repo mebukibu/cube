@@ -10,7 +10,7 @@ module network (
     output wire [3:0] q,
     // debug ports
     output wire [3:0] cs_out,
-    output wire [32*5*6*`data_len - 1:0] data_out
+    output wire [12*288*`data_len - 1:0] data_out
   );
 
   // ports for state_layer
