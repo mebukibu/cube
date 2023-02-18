@@ -1,3 +1,4 @@
+`include "num_data.v"
 `include "state_main_data.v"
 
 module main_tb ();
@@ -10,8 +11,8 @@ module main_tb ();
   wire [3:0] step;
   wire q;
 
-  wire [2:0] cs_out;
-  wire [120 - 1:0] data_out;
+  wire [3:0] cs_out;
+  wire [32*3*4*`data_len - 1:0] data_out;
 
   main main0 (clk, rst_n, run, d, addr, step, q, cs_out, data_out);
 
@@ -30,6 +31,7 @@ module main_tb ();
     rst_n=1; #10
     run=1; #10
     #100
+    $display("%h", data_out);
     $finish;
   end
 

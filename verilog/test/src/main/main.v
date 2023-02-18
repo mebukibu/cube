@@ -1,3 +1,4 @@
+`include "num_data.v"
 `include "state_main_data.v"
 
 module main (
@@ -9,8 +10,8 @@ module main (
     output reg [3:0] step,
     output wire q,
     // debug ports
-    output wire [2:0] cs_out,
-    output wire [120 - 1:0] data_out
+    output wire [3:0] cs_out,
+    output wire [32*3*4*`data_len - 1:0] data_out
   );
 
   // ports for state_main
@@ -23,8 +24,8 @@ module main (
   wire [120 - 1:0] cubeout;
 
   // ports for network
-  reg network_valid;
-  reg [3:0] networkout;
+  wire network_valid;
+  wire [3:0] networkout;
 
   // use in this module
   reg [2:0] cs_temp;
@@ -39,8 +40,8 @@ module main (
   assign q = (cs == `FINISH);
 
   // assign debug ports
-  assign cs_out = cs;
-  assign data_out = cubeout;
+  //assign cs_out = cs;
+  //assign data_out = cubeout;
 
   // slv_reg writer
   always @(posedge clk, negedge rst_n) begin
@@ -92,18 +93,16 @@ module main (
     .q(cubeout)
   );
 
-  // network network_inst (
-  //   .clk(clk),
-  //   .rst_n(rst_n),
-  //   .load(cs == `NETWORK),
-  //   .d(cubeout),
-  //   .valid(network_valid),
-  //   .q(networkout)
-  // );
-
-  initial begin
-    network_valid = 0;
-    networkout = 0;
-  end
+  network network_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .load(cs == `NETWORK),
+    .d(cubeout),
+    .valid(network_valid),
+    .q(networkout),
+    // debug ports
+    .cs_out(cs_out),
+    .data_out(data_out)
+  );
   
 endmodule

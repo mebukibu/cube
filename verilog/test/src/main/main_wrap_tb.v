@@ -3,7 +3,7 @@ module main_wrap_tb ();
   reg clk;
   reg rst_n;
   reg run;
-  wire [2:0] cs_out;
+  wire [3:0] cs_out;
   wire [9:0] data_disp;
   wire q;
 
