@@ -1,4 +1,4 @@
-`include "../data/state_layer_data.v"
+`include "state_layer_data.v"
 
 module state_layer (
     input wire clk,

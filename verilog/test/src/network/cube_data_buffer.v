@@ -1,4 +1,4 @@
-`include "../data/num_data.v"
+`include "num_data.v"
 
 module cube_data_buffer (
     input wire clk,

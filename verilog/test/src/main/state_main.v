@@ -1,4 +1,4 @@
-`include "../data/state_main_data.v"
+`include "state_main_data.v"
 
 module state_main (
     input wire clk,
