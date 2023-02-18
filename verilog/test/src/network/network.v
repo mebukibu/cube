@@ -10,7 +10,7 @@ module network (
     output wire [3:0] q,
     // debug ports
     output wire [3:0] cs_out,
-    output wire [32*3*4*`data_len - 1:0] data_out
+    output wire [32*5*6*`data_len - 1:0] data_out
   );
 
   // ports for state_layer
@@ -23,8 +23,8 @@ module network (
   //ports for cnn_layer
   wire load2cnn;
   wire [32*3*4*`data_len - 1:0] data2cnn;
-  reg cnn_valid;
-  reg [32*12*`data_len - 1:0] cnnout;
+  wire cnn_valid;
+  wire [32*12*`data_len - 1:0] cnnout;
 
   // ports for elu_layer
   reg elu_valid;
@@ -58,8 +58,8 @@ module network (
 
   // assign debug ports
   assign q = 0;
-  assign cs_out = cs;
-  assign data_out = bufout;
+  //assign cs_out = cs;
+  //assign data_out = bufout;
 
   // generate
   //   genvar i;
@@ -86,15 +86,18 @@ module network (
     .q(bufout)
   );
 
-  // cnn_layer cnn_layer_inst (
-  //   .clk(clk),
-  //   .rst_n(rst_n),
-  //   .load(load2cnn),
-  //   .cs_layer(cs),
-  //   .d(data2cnn),
-  //   .valid(cnn_valid),
-  //   .q(cnnout)
-  // );
+  cnn_layer cnn_layer_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .load(load2cnn),
+    .cs_layer(cs),
+    .d(data2cnn),
+    .valid(cnn_valid),
+    .q(cnnout),
+    // debug ports
+    .cs_out(cs_out),
+    .data_out(data_out)
+  );
 
   // elu_layer elu_layer_inst (
   //   .clk(clk),
@@ -114,8 +117,8 @@ module network (
   // );
 
   initial begin
-    cnn_valid = 0;
-    cnnout = 0;
+    //cnn_valid = 0;
+    //cnnout = 0;
 
     elu_valid = 0;
     eluout = 0;
