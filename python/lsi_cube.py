@@ -83,7 +83,8 @@ def main():
 
   weight = read_weight()
   bias = read_bias()
-  #print(min(np.array(weight[4]).flatten()))
+  print(weight)
+  return
 
   cube = cb.Cube(first_state)
   """
