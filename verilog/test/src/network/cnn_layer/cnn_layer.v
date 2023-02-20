@@ -12,7 +12,7 @@ module cnn_layer (
     output wire [32*12*`data_len - 1:0] q,
     //debug ports
     output wire [3:0] cs_out,
-    output wire [12*288*`data_len - 1:0] data_out
+    output wire [32*12*`data_len - 1:0] data_out
   );
 
   // ports for state_calc
@@ -33,9 +33,9 @@ module cnn_layer (
   //reg [9*`data_len - 1:0] ramout;
 
   // ports for dot
-  reg dot_valid;
-  reg [8:0] dot_addr;
-  reg [12*32*`data_len - 1:0] dotout;
+  wire dot_valid;
+  //reg [8:0] dot_addr;
+  wire [32*12*`data_len - 1:0] dotout;
 
   // ports for affine_store
   reg aff_valid;
@@ -47,7 +47,7 @@ module cnn_layer (
                       (cs_calc == `ZPAD) & 1'b1 |
                       (cs_calc == `IM2C) & 1'b1 | // (im2c_valid | aff_valid) |
                       (cs_calc == `DOTP) & dot_valid |
-                      (cs_calc == `BIAS) & 1'b1 |
+                      (cs_calc == `BIAS) & 1'b0 | // 1'b1 |
                       (cs_calc == `FINI) & 1'b0;
 
   // assign ram_addr = {9{(cs_layer != `AFFINE) & (cs_calc == `IM2C)}} & im2c_addr |
@@ -62,7 +62,7 @@ module cnn_layer (
   // assign debug ports
   assign q = 0;
   assign cs_out = {1'b0, cs_calc};
-  assign data_out = im2cout;
+  assign data_out = dotout;
 
   // instance
   state_calc state_calc_inst (
@@ -99,16 +99,16 @@ module cnn_layer (
   //   .q(ramout)
   // );
 
-  // dot dot_inst (
-  //   .clk(clk),
-  //   .rst_n(rst_n),
-  //   .load(cs_calc == `DOTP),
-  //   .cs(cs_layer),
-  //   .d(ramout),
-  //   .valid(dot_valid),
-  //   .addr(dot_addr),
-  //   .q(dotout)
-  // );
+  dot dot_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .load(cs_calc == `DOTP),
+    .cs_layer(cs_layer),
+    .d(im2cout),
+    .valid(dot_valid),
+    //.addr(dot_addr),
+    .q(dotout)
+  );
 
   // add_bias add_bias_inst (
   //   .clk(clk),
@@ -136,9 +136,9 @@ module cnn_layer (
 
     //ramout = 0;
 
-    dot_valid = 0;
-    dot_addr = 0;
-    dotout = 0;
+    //dot_valid = 0;
+    //dot_addr = 0;
+    //dotout = 0;
 
     aff_valid = 0;
     aff_addr = 0;

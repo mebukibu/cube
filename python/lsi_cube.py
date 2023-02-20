@@ -53,6 +53,7 @@ def elu(x):
 def layer(input_data, weight, bias):
   col = im2col(input_data)
   out = np.dot(col, np.array(weight).T)
+  print(out[0][0])
   #print(min(np.array(out).flatten()))
   #out = np.dot(np.array(weight), col.T)
   out = out + np.array(bias)
@@ -73,7 +74,12 @@ def predict(cube, weight, bias):
   return out.argmax()
 
 def main():
-  first_state = None
+  first_state = [
+      [[3, 0, 1, 2], [0, 0, 0, 0], [4, 5,  6,  7]],
+      [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0,  0,  0]],
+      [[3, 0, 1, 2], [4, 5, 6, 7], [8, 9, 10, 11]],
+      [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0,  0,  0]]
+    ]
   """[
       [[7, 1, 6,  4], [0, 0, 0, 0], [0,  5, 3, 2]],
       [[0, 2, 1,  0], [0, 0, 0, 0], [1,  2, 0, 0]],
@@ -83,8 +89,8 @@ def main():
 
   weight = read_weight()
   bias = read_bias()
-  print(weight)
-  return
+  #print(np.sum(weight[0][31][0:]))
+  #return
 
   cube = cb.Cube(first_state)
   """
@@ -96,7 +102,7 @@ def main():
   print(cube.check())
   """
 
-  """
+  
   for j in range(30):
     next_step = predict(cube, weight, bias)
     print('step = ' + str(next_step + 1))
@@ -104,9 +110,9 @@ def main():
     if cube.check():
       print('success')
       break
-  """
-
   
+
+  """
   cnt = 0
   for i in range(1000):
     cube.reset(3)
@@ -119,9 +125,7 @@ def main():
         cnt = cnt + 1
         break
   print(cnt)
-  
-  
-  
+  """
 
 
 if __name__ == '__main__':
