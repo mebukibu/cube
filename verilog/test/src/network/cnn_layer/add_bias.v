@@ -15,13 +15,24 @@ module add_bias (
   reg [7:0] offset;
   integer i, j;
 
-  always @(posedge clk) begin
-    if (cs_layer == `LAYER0) offset <= 0;
-    else if (cs_layer == `LAYER1) offset <= 32;
-    else if (cs_layer == `LAYER2) offset <= 2*32;
-    else if (cs_layer == `LAYER3) offset <= 3*32;
-    else if (cs_layer == `AFFINE) offset <= 4*32;
-    else offset <= 8'hXX;
+  // always @(posedge clk) begin
+  //   if (cs_layer == `LAYER0) offset <= 0;
+  //   else if (cs_layer == `LAYER1) offset <= 32;
+  //   else if (cs_layer == `LAYER2) offset <= 2*32;
+  //   else if (cs_layer == `LAYER3) offset <= 3*32;
+  //   else if (cs_layer == `AFFINE) offset <= 4*32;
+  //   else offset <= 8'hXX;
+  // end
+
+  always @(cs_layer) begin
+    case (cs_layer)
+      `LAYER0 : offset <= 0*32;
+      `LAYER1 : offset <= 1*32;
+      `LAYER2 : offset <= 2*32;
+      `LAYER3 : offset <= 3*32;
+      `AFFINE : offset <= 4*32;
+      default : offset <= 8'hXX;
+    endcase
   end
 
   always @(posedge clk, negedge rst_n) begin
