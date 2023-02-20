@@ -53,10 +53,10 @@ def elu(x):
 def layer(input_data, weight, bias):
   col = im2col(input_data)
   out = np.dot(col, np.array(weight).T)
-  print(out[0][0])
   #print(min(np.array(out).flatten()))
   #out = np.dot(np.array(weight), col.T)
   out = out + np.array(bias)
+  print(out[0][0])
   #print(min(np.array(out).flatten()))
   out = elu(out)
   #print(max(np.array(out).flatten()))
