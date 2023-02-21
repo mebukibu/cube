@@ -56,9 +56,9 @@ def layer(input_data, weight, bias):
   #print(min(np.array(out).flatten()))
   #out = np.dot(np.array(weight), col.T)
   out = out + np.array(bias)
-  print(out[0][0])
   #print(min(np.array(out).flatten()))
   out = elu(out)
+  print(out[11][31])
   #print(max(np.array(out).flatten()))
   out = out.T.reshape(32, 3, 4)
   return out

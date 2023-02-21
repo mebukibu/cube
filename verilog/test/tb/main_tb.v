@@ -31,6 +31,7 @@ module main_tb ();
     rst_n=1; #10
     run=1; #10
     #11000
+    #2000
     $display("%h", data_out);
     $finish;
   end

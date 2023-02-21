@@ -27,8 +27,8 @@ module network (
   wire [32*12*`data_len - 1:0] cnnout;
 
   // ports for elu_layer
-  reg elu_valid;
-  reg [32*12*`data_len - 1:0] eluout;
+  wire elu_valid;
+  wire [32*12*`data_len - 1:0] eluout;
 
   // port for comp_layer
   reg comp_valid;
@@ -44,7 +44,7 @@ module network (
                       (cs == `LAYER2) & cnn_valid |
                       (cs == `LAYER3) & cnn_valid |
                       (cs == `AFFINE) & cnn_valid |
-                      (cs == `ELU   ) & elu_valid |
+                      (cs == `ELU   ) & 1'b0 | //elu_valid |
                       (cs == `COMP  ) & comp_valid |
                       (cs == `LFIN  ) & 1'b0;
 
@@ -58,8 +58,8 @@ module network (
 
   // assign debug ports
   assign q = 0;
-  //assign cs_out = cs;
-  //assign data_out = bufout;
+  assign cs_out = cs;
+  assign data_out = eluout;
 
   // generate
   //   genvar i;
@@ -93,19 +93,19 @@ module network (
     .cs_layer(cs),
     .d(data2cnn),
     .valid(cnn_valid),
-    .q(cnnout),
+    .q(cnnout)
     // debug ports
-    .cs_out(cs_out),
-    .data_out(data_out)
+    //.cs_out(cs_out),
+    //.data_out(data_out)
   );
 
-  // elu_layer elu_layer_inst (
-  //   .clk(clk),
-  //   .load(cs == `ELU),
-  //   .d(cnnout),
-  //   .valid(elu_valid),
-  //   .q(eluout)
-  // );
+  elu_layer elu_layer_inst (
+    .clk(clk),
+    .load(cs == `ELU),
+    .d(cnnout),
+    .valid(elu_valid),
+    .q(eluout)
+  );
 
   // comp_layer comp_layer_inst (
   //   .clk(clk),
@@ -120,8 +120,8 @@ module network (
     //cnn_valid = 0;
     //cnnout = 0;
 
-    elu_valid = 0;
-    eluout = 0;
+    //elu_valid = 0;
+    //eluout = 0;
 
     comp_valid = 0;
     comp_d1 = 0;
