@@ -42,9 +42,9 @@ module network (
                       (cs == `LAYER0) & cnn_valid |
                       (cs == `LAYER1) & cnn_valid |
                       (cs == `LAYER2) & cnn_valid |
-                      (cs == `LAYER3) & cnn_valid |
+                      (cs == `LAYER3) & 1'b0 | //cnn_valid |
                       (cs == `AFFINE) & cnn_valid |
-                      (cs == `ELU   ) & 1'b0 | //elu_valid |
+                      (cs == `ELU   ) & elu_valid |
                       (cs == `COMP  ) & comp_valid |
                       (cs == `LFIN  ) & 1'b0;
 

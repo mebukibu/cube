@@ -17,7 +17,7 @@ module main_wrap_tb ();
     rst_n=0; run=0; #10
     rst_n=1; #10
     run=1; #10
-    #11000
+    #60000
     $finish;
   end
 
