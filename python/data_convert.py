@@ -41,7 +41,20 @@ def convert_162():
             o_line = ''
           line_cnt += 1
 
-  return
+def convert_bias():
+  for i in range(32):
+    with open('../verilog/data/data18/bias18_data.txt', 'r') as i_file:
+      with open('../verilog/test/src/network/cnn_layer/bias576_data.txt', 'w') as o_file:
+        line_cnt = 0
+        o_line = ''
+        for line in i_file:
+          o_line = line[:18] + o_line
+          if (line_cnt + 1) % 32 == 0:
+            o_file.write(o_line + '\n')
+            o_line = ''
+          line_cnt += 1
+
 
 if __name__ == '__main__':
-  convert_162()
+  #convert_162()
+  convert_bias()

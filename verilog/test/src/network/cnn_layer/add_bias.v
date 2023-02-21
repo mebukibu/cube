@@ -11,8 +11,9 @@ module add_bias (
   );
 
   // use in this module
-  reg [`data_len - 1:0] bias [0:32*5 - 1]; // 1 layer uses 32 bias. 5 layers.
-  reg [7:0] offset;
+  reg [32*`data_len - 1:0] bias;
+  reg [32*`data_len - 1:0] bias_mem [0:4]; // 1 layer uses 32 bias. 5 layers.
+  // reg [7:0] offset;
   integer i, j;
 
   // always @(posedge clk) begin
@@ -26,12 +27,12 @@ module add_bias (
 
   always @(cs_layer) begin
     case (cs_layer)
-      `LAYER0 : offset <= 0*32;
-      `LAYER1 : offset <= 1*32;
-      `LAYER2 : offset <= 2*32;
-      `LAYER3 : offset <= 3*32;
-      `AFFINE : offset <= 4*32;
-      default : offset <= 8'hXX;
+      `LAYER0 : bias <= bias_mem[0]; //offset <= 0*32;
+      `LAYER1 : bias <= bias_mem[1]; //offset <= 1*32;
+      `LAYER2 : bias <= bias_mem[2]; //offset <= 2*32;
+      `LAYER3 : bias <= bias_mem[3]; //offset <= 3*32;
+      `AFFINE : bias <= bias_mem[4]; //offset <= 4*32;
+      default : bias <= {32*`data_len{1'bX}}; //offset <= 8'hXX;
     endcase
   end
 
@@ -40,14 +41,14 @@ module add_bias (
     else if (load) begin
       for (i = 0; i < 32; i = i + 1) begin
         for (j = 0; j < 12; j = j + 1) begin
-          q[(12*i+j)*`data_len +: `data_len] <= d[(12*i+j)*`data_len +: `data_len] + bias[i + offset];
+          q[(12*i+j)*`data_len +: `data_len] <= d[(12*i+j)*`data_len +: `data_len] + bias[i*`data_len +: `data_len];
         end
       end
     end
   end
 
   initial begin
-    $readmemb("C:/Users/masato/src/cube/verilog/test/src/network/cnn_layer/bias18_data.txt", bias);
+    $readmemb("C:/Users/masato/src/cube/verilog/test/src/network/cnn_layer/bias576_data.txt", bias_mem);
   end
 
 endmodule
