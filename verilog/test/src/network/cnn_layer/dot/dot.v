@@ -23,24 +23,25 @@ module dot (
   integer n;
 
   reg [12:0] offset;
-  reg [4:0] d_cnt;
-  reg [12:0] d_index;       // 2^13 > 5832 = 36*9*18
-  wire [288*`data_len - 1:0] d_temp [0:11];
+  reg [4:0] d_index;
+  wire [9*`data_len - 1:0] d_temp [0:11][0:31];
 
   reg [5:0] q_cnt;
-  reg [9:0] q_index;
+  reg [4:0] q_index;
   reg [`data_len - 1:0] q_sum [0:11];
-  reg [32*`data_len - 1:0] q_temp [0:11];
+  reg [`data_len - 1:0] q_temp [0:11][0:31];
 
   // assign
   generate
     genvar i, j;
     for (i = 0; i < 12 ; i = i + 1) begin
-      assign d_temp[i] = d[i*288*`data_len +: 288*`data_len];
+      for (j = 0; j < 32; j = j + 1) begin
+        assign d_temp[i][j] = d[(32*i+j)*9*`data_len +: 9*`data_len];
+      end
     end
     for (i = 0; i < 32; i = i + 1) begin
       for (j = 0; j < 12; j = j + 1) begin
-        assign q[(12*i+j)*`data_len +: `data_len] = q_temp[j][i*`data_len +: `data_len];
+        assign q[(12*i+j)*`data_len +: `data_len] = q_temp[j][i];
       end
     end    
   endgenerate
@@ -67,27 +68,18 @@ module dot (
   // input data controller
   always @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
-      d_cnt <= 0;
       d_index <= 0;
       for (n = 0; n < 12; n = n + 1) begin
         data_in[n] <= 0;
       end
     end
     else if (load) begin
-      if (d_cnt < 31) begin
-        d_cnt <= d_cnt + 1;
-        d_index <= d_index + 9*`data_len;
-      end
-      else begin
-        d_cnt <= 0;
-        d_index <= 0;
-      end
+      d_index <= d_index + 1;
       for (n = 0; n < 12; n = n + 1) begin
-        data_in[n] <= d_temp[n][d_index +: 9*`data_len];
+        data_in[n] <= d_temp[n][d_index];
       end
     end
     else begin
-      d_cnt <= 0;
       d_index <= 0;
       for (n = 0; n < 12; n = n + 1) begin
         data_in[n] <= 0;
@@ -103,18 +95,17 @@ module dot (
       valid <= 0;
       for (n = 0; n < 12; n = n + 1) begin
         q_sum[n] <= 0;
-        q_temp[n] <= 0;
       end      
     end
     else if (load) begin
-      if (d_cnt == 4) begin
+      if (d_index == 4) begin
         q_cnt <= q_cnt + 1;
         if (q_cnt != 0) begin
-          q_index <= q_index + `data_len;
+          q_index <= q_index + 1;
         end
         for (n = 0; n < 12; n = n + 1) begin
           q_sum[n] <= innerout[n];
-          q_temp[n][q_index +: `data_len] <= q_sum[n];
+          q_temp[n][q_index] <= q_sum[n];
         end
       end
       else begin
