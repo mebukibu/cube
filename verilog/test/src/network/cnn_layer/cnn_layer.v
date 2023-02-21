@@ -34,16 +34,17 @@ module cnn_layer (
 
   // ports for dot
   wire dot_valid;
-  //reg [8:0] dot_addr;
+  wire [2*288*`data_len - 1:0] dot_in;
   wire [32*12*`data_len - 1:0] dotout;
 
   // ports for add_bias
   wire [32*12*`data_len - 1:0] biasout;
 
   // ports for affine_store
-  reg aff_valid;
-  reg [8:0] aff_addr;
-  reg [9*`data_len - 1:0] affout;
+  wire [2*288*`data_len - 1:0] affout;
+  // reg aff_valid;
+  // reg [8:0] aff_addr;
+  // reg [9*`data_len - 1:0] affout;
 
   // assign
   assign load2state = (cs_calc == `CIDL) & 1'b0 |
@@ -57,8 +58,13 @@ module cnn_layer (
   //                   {9{(cs_layer == `AFFINE) & (cs_calc == `IM2C)}} & aff_addr |
   //                   {9{(cs_calc == `DOTP)}} & dot_addr;
 
-  // assign data2ram = {9*`data_len{cs_layer == `AFFINE}} & affout |
-  //                   {9*`data_len{cs_layer != `AFFINE}} & im2cout;
+  assign affout = {
+    //{10*288*`data_len{1'b0}},
+    {96*`data_len{1'b0}}, d[32*6*`data_len +: 192*`data_len],
+    {96*`data_len{1'b0}}, d[0 +: 32*6*`data_len]};
+
+  assign dot_in = {2*288*`data_len{cs_layer == `AFFINE}} & affout |
+                  {2*288*`data_len{cs_layer != `AFFINE}} & im2cout[2*288*`data_len - 1:0];
 
   assign valid = (cs_calc == `FINI);
 
@@ -107,7 +113,7 @@ module cnn_layer (
     .rst_n(rst_n),
     .load(cs_calc == `DOTP),
     .cs_layer(cs_layer),
-    .d(im2cout),
+    .d({im2cout[12*288*`data_len - 1 : 2*288*`data_len], dot_in}),
     .valid(dot_valid),
     //.addr(dot_addr),
     .q(dotout)
@@ -143,9 +149,9 @@ module cnn_layer (
     //dot_addr = 0;
     //dotout = 0;
 
-    aff_valid = 0;
-    aff_addr = 0;
-    affout = 0;
+    //aff_valid = 0;
+    //aff_addr = 0;
+    //affout = 0;
   end
   
 endmodule

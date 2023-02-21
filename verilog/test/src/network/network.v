@@ -31,9 +31,9 @@ module network (
   wire [32*12*`data_len - 1:0] eluout;
 
   // port for comp_layer
-  reg comp_valid;
-  reg [12*`data_len - 1:0] comp_d1;
-  reg [12*`data_len - 1:0] comp_d2;
+  wire comp_valid;
+  wire [12*`data_len - 1:0] comp_d1;
+  wire [12*`data_len - 1:0] comp_d2;
 
 
   // assign for state_layer
@@ -42,10 +42,10 @@ module network (
                       (cs == `LAYER0) & cnn_valid |
                       (cs == `LAYER1) & cnn_valid |
                       (cs == `LAYER2) & cnn_valid |
-                      (cs == `LAYER3) & 1'b0 | //cnn_valid |
+                      (cs == `LAYER3) & cnn_valid |
                       (cs == `AFFINE) & cnn_valid |
                       (cs == `ELU   ) & elu_valid |
-                      (cs == `COMP  ) & comp_valid |
+                      (cs == `COMP  ) & 1'b0 | //comp_valid |
                       (cs == `LFIN  ) & 1'b0;
 
   // assign for cnn_layer
@@ -57,17 +57,17 @@ module network (
   assign valid = (cs == `LFIN);
 
   // assign debug ports
-  assign q = 0;
+  //assign q = 0;
   assign cs_out = cs;
-  assign data_out = eluout;
+  assign data_out = cnnout;
 
-  // generate
-  //   genvar i;
-  //   for (i = 0; i < 12; i = i + 1) begin
-  //     assign comp_d1[i*`data_len +: `data_len] = cnnout[12*i*`data_len +: `data_len];
-  //     assign comp_d2[i*`data_len +: `data_len] = cnnout[(12*(i+12)+1)*`data_len +: `data_len];
-  //   end
-  // endgenerate
+  generate
+    genvar i;
+    for (i = 0; i < 12; i = i + 1) begin
+      assign comp_d1[i*`data_len +: `data_len] = cnnout[12*i*`data_len +: `data_len];
+      assign comp_d2[i*`data_len +: `data_len] = cnnout[(12*(i+12)+1)*`data_len +: `data_len];
+    end
+  endgenerate
 
   // instance
   state_layer state_layer_inst (
@@ -107,14 +107,15 @@ module network (
     .q(eluout)
   );
 
-  // comp_layer comp_layer_inst (
-  //   .clk(clk),
-  //   .load(cs == `COMP),
-  //   .d1(comp_d1),
-  //   .d2(comp_d2),
-  //   .valid(comp_valid),
-  //   .q(q)
-  // );
+  comp_layer comp_layer_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .load(cs == `COMP),
+    .d1(comp_d1),
+    .d2(comp_d2),
+    .valid(comp_valid),
+    .q(q)
+  );
 
   initial begin
     //cnn_valid = 0;
@@ -123,9 +124,9 @@ module network (
     //elu_valid = 0;
     //eluout = 0;
 
-    comp_valid = 0;
-    comp_d1 = 0;
-    comp_d2 = 0;
+    //comp_valid = 0;
+    //comp_d1 = 0;
+    //comp_d2 = 0;
   end
   
 endmodule

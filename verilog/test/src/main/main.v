@@ -11,7 +11,7 @@ module main (
     output wire q,
     // debug ports
     output wire [3:0] cs_out,
-    output wire [32*12*`data_len - 1:0] data_out
+    output wire [3:0] data_out
   );
 
   // ports for state_main
@@ -41,7 +41,7 @@ module main (
 
   // assign debug ports
   //assign cs_out = cs;
-  //assign data_out = cubeout;
+  assign data_out = networkout;
 
   // slv_reg writer
   always @(posedge clk, negedge rst_n) begin
@@ -101,8 +101,8 @@ module main (
     .valid(network_valid),
     .q(networkout),
     // debug ports
-    .cs_out(cs_out),
-    .data_out(data_out)
+    .cs_out(cs_out)
+    //.data_out(data_out)
   );
   
 endmodule
