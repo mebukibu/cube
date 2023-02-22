@@ -35,7 +35,7 @@ module cnn_layer (
   // ports for dot
   wire dot_valid;
   wire [2*288*`data_len - 1:0] dot_in;
-  wire [32*12*`data_len - 1:0] dotout;
+  wire [12*32*`data_len - 1:0] dotout;
 
   // ports for add_bias
   wire [32*12*`data_len - 1:0] biasout;

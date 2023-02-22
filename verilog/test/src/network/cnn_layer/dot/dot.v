@@ -8,7 +8,7 @@ module dot (
     input wire [3:0] cs_layer,
     input wire [12*288*`data_len - 1:0] d,
     output reg valid,
-    output wire [32*12*`data_len - 1:0] q
+    output wire [12*32*`data_len - 1:0] q
   );
 
   // ports for rom
@@ -37,13 +37,9 @@ module dot (
     for (i = 0; i < 12 ; i = i + 1) begin
       for (j = 0; j < 32; j = j + 1) begin
         assign d_temp[i][j] = d[(32*i+j)*9*`data_len +: 9*`data_len];
+        assign q[(32*i+j)*`data_len +: `data_len] = q_temp[i][j];
       end
     end
-    for (i = 0; i < 32; i = i + 1) begin
-      for (j = 0; j < 12; j = j + 1) begin
-        assign q[(12*i+j)*`data_len +: `data_len] = q_temp[j][i];
-      end
-    end    
   endgenerate
 
   // offset

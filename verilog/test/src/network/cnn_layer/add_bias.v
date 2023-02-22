@@ -6,23 +6,27 @@ module add_bias (
     input wire rst_n,
     input wire load,
     input wire [3:0] cs_layer,
-    input wire [32*12*`data_len - 1:0] d,
-    output reg [32*12*`data_len - 1:0] q
+    input wire [12*32*`data_len - 1:0] d,
+    output wire [32*12*`data_len - 1:0] q
   );
 
   // use in this module
-  reg [`data_len - 1:0] bias [0:32*5 - 1]; // 1 layer uses 32 bias. 5 layers.
+  integer m, n;
   reg [7:0] offset;
-  integer i, j;
+  reg [`data_len - 1:0] bias [0:32*5 - 1]; // 1 layer uses 32 bias. 5 layers.
+  wire [`data_len - 1:0] d_temp [0:11][0:31];
+  reg [`data_len - 1:0] q_temp [0:11][0:31];
 
-  // always @(posedge clk) begin
-  //   if (cs_layer == `LAYER0) offset <= 0;
-  //   else if (cs_layer == `LAYER1) offset <= 32;
-  //   else if (cs_layer == `LAYER2) offset <= 2*32;
-  //   else if (cs_layer == `LAYER3) offset <= 3*32;
-  //   else if (cs_layer == `AFFINE) offset <= 4*32;
-  //   else offset <= 8'hXX;
-  // end
+  // assign
+  generate
+    genvar i, j;
+    for (i = 0; i < 12 ; i = i + 1)
+      for (j = 0; j < 32; j = j + 1)
+        assign d_temp[i][j] = d[(32*i+j)*`data_len +: `data_len];
+    for (i = 0; i < 32; i = i + 1)
+      for (j = 0; j < 12; j = j + 1)
+        assign q[(12*i+j)*`data_len +: `data_len] = q_temp[j][i];
+  endgenerate
 
   always @(cs_layer) begin
     case (cs_layer)
@@ -36,13 +40,15 @@ module add_bias (
   end
 
   always @(posedge clk, negedge rst_n) begin
-    if (!rst_n) q <= 0;
+    if (!rst_n) begin
+      for (m = 0; m < 12; m = m + 1)
+        for (n = 0; n < 32; n = n + 1) 
+          q_temp[m][n] <= 0;
+    end
     else if (load) begin
-      for (i = 0; i < 32; i = i + 1) begin
-        for (j = 0; j < 12; j = j + 1) begin
-          q[(12*i+j)*`data_len +: `data_len] <= d[(12*i+j)*`data_len +: `data_len] + bias[i + offset];
-        end
-      end
+      for (m = 0; m < 12; m = m + 1)
+        for (n = 0; n < 32; n = n + 1)
+          q_temp[m][n] <= d_temp[m][n] + bias[n + offset];
     end
   end
 
