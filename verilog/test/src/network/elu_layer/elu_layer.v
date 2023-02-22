@@ -2,6 +2,7 @@
 
 module elu_layer (
     input wire clk,
+    input wire rst_n,
     input wire load,
     input wire [32*12*`data_len - 1:0] d,
     output reg valid,
@@ -13,6 +14,7 @@ module elu_layer (
   wire [12*`data_len - 1:0] eluout;
 
   // use in this module
+  integer n;
   wire [12*`data_len - 1:0] data12 [0:31];
   reg [12*`data_len - 1:0] q_temp [0:31];
   reg [4:0] d_index;
@@ -23,6 +25,7 @@ module elu_layer (
     for (i = 0; i < 12; i = i + 1) begin :elu_table
       elu_table elu_table_inst (
         .clk(clk),
+        .rst_n(rst_n),
         .d(data2elu[i*`data_len +: `data_len]),
         .q(eluout[i*`data_len +: `data_len])
       );
@@ -37,8 +40,17 @@ module elu_layer (
     end
   endgenerate
 
-  always @(posedge clk) begin
-    if (load) begin
+  always @(posedge clk, negedge rst_n) begin
+    if (!rst_n) begin
+      valid <= 0;
+      d_index <= 0;
+      q_index <= 0;
+      data2elu <= 0;
+      for (n = 0; n < 32; n = n + 1) begin
+        q_temp[n] <= 0;
+      end
+    end
+    else if (load) begin
       if (d_index < 4) begin
         d_index <= d_index + 1;
       end

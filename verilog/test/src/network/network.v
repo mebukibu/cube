@@ -18,11 +18,11 @@ module network (
   wire [3:0] cs;
 
   // ports for cube_data_buffer
-  wire [32*3*4*`data_len - 1:0] bufout;
+  wire [4*3*4*`data_len - 1:0] bufout;
 
   //ports for cnn_layer
   wire load2cnn;
-  wire [32*3*4*`data_len - 1:0] data2cnn;
+  wire [4*3*4*`data_len - 1:0] data2cnn;
   wire cnn_valid;
   wire [32*12*`data_len - 1:0] cnnout;
 
@@ -50,8 +50,8 @@ module network (
 
   // assign for cnn_layer
   assign load2cnn = (cs == `LAYER0) | (cs == `LAYER1) | (cs == `LAYER2) | (cs == `LAYER3) | (cs == `AFFINE);
-  assign data2cnn = {32*3*4*`data_len{cs == `LAYER0}} & bufout |
-                    {32*3*4*`data_len{cs != `LAYER0}} & eluout;
+  assign data2cnn = {4*3*4*`data_len{cs == `LAYER0}} & bufout |
+                    {4*3*4*`data_len{cs != `LAYER0}} & eluout[4*3*4*`data_len - 1:0];
 
   // assign for output
   assign valid = (cs == `LFIN);
@@ -91,7 +91,7 @@ module network (
     .rst_n(rst_n),
     .load(load2cnn),
     .cs_layer(cs),
-    .d(data2cnn),
+    .d({eluout[32*12*`data_len - 1 : 4*3*4*`data_len], data2cnn}),
     .valid(cnn_valid),
     .q(cnnout)
     // debug ports
@@ -101,6 +101,7 @@ module network (
 
   elu_layer elu_layer_inst (
     .clk(clk),
+    .rst_n(rst_n),
     .load(cs == `ELU),
     .d(cnnout),
     .valid(elu_valid),

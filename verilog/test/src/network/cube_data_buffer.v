@@ -5,7 +5,7 @@ module cube_data_buffer (
     input wire rst_n,
     input wire load,
     input wire [120 - 1:0] d,
-    output reg [32*3*4*`data_len - 1:0] q
+    output reg [4*3*4*`data_len - 1:0] q
   );
 
   integer i;
