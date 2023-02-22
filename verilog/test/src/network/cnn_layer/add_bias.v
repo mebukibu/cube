@@ -14,7 +14,7 @@ module add_bias (
   // use in this module
   integer m, n;
   reg [7:0] offset;
-  reg [3:0] index;
+  reg [4:0] index;
   wire [`data_len - 1:0] d_temp [0:11][0:31];
   reg [`data_len - 1:0] q_temp [0:11][0:31];
   reg [`data_len - 1:0] bias [0:32*5 - 1];      // 1 layer uses 32 bias. 5 layers.
@@ -25,6 +25,7 @@ module add_bias (
     for (i = 0; i < 12 ; i = i + 1)
       for (j = 0; j < 32; j = j + 1)
         assign d_temp[i][j] = d[(32*i+j)*`data_len +: `data_len];
+
     for (i = 0; i < 32; i = i + 1)
       for (j = 0; j < 12; j = j + 1)
         assign q[(12*i+j)*`data_len +: `data_len] = q_temp[j][i];
@@ -50,10 +51,10 @@ module add_bias (
           q_temp[m][n] <= 0;
     end
     else if (load) begin
-      if (index == 11) valid <= 1;
+      if (index == 31) valid <= 1;
       else index <= index + 1;
-      for (n = 0; n < 32; n = n + 1)
-        q_temp[index][n] <= d_temp[index][n] + bias[n + offset];
+      for (m = 0; m < 12; m = m + 1)
+        q_temp[m][index] <= d_temp[m][index] + bias[{3'h0, index} + offset];
     end
     else begin
       valid <= 0;
