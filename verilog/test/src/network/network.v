@@ -9,8 +9,8 @@ module network (
     output wire valid,
     output wire [3:0] q,
     // debug ports
-    output wire [3:0] cs_out,
-    output wire [32*12*`data_len - 1:0] data_out
+    output wire [3:0] cs_out
+    //output wire [32*12*`data_len - 1:0] data_out
   );
 
   // ports for state_layer
@@ -59,7 +59,7 @@ module network (
   // assign debug ports
   //assign q = 0;
   assign cs_out = cs;
-  assign data_out = cnnout;
+  //assign data_out = cnnout;
 
   generate
     genvar i;

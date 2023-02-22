@@ -9,10 +9,10 @@ module cnn_layer (
     input wire [3:0] cs_layer,
     input wire [32*3*4*`data_len - 1:0] d,
     output wire valid,
-    output wire [32*12*`data_len - 1:0] q,
+    output wire [32*12*`data_len - 1:0] q
     //debug ports
-    output wire [3:0] cs_out,
-    output wire [32*12*`data_len - 1:0] data_out
+    //output wire [3:0] cs_out,
+    //output wire [32*12*`data_len - 1:0] data_out
   );
 
   // ports for state_calc
@@ -71,8 +71,8 @@ module cnn_layer (
 
   // assign debug ports
   assign q = biasout;
-  assign cs_out = cs_layer;
-  assign data_out = biasout;
+  //assign cs_out = cs_layer;
+  //assign data_out = biasout;
 
   // instance
   state_calc state_calc_inst (
