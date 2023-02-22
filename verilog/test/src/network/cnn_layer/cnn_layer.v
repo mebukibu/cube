@@ -38,6 +38,7 @@ module cnn_layer (
   wire [12*32*`data_len - 1:0] dotout;
 
   // ports for add_bias
+  wire bias_valid;
   wire [32*12*`data_len - 1:0] biasout;
 
   // ports for affine_store
@@ -51,7 +52,7 @@ module cnn_layer (
                       (cs_calc == `ZPAD) & 1'b1 |
                       (cs_calc == `IM2C) & 1'b1 | // (im2c_valid | aff_valid) |
                       (cs_calc == `DOTP) & dot_valid |
-                      (cs_calc == `BIAS) & 1'b1 |
+                      (cs_calc == `BIAS) & bias_valid |
                       (cs_calc == `FINI) & 1'b0;
 
   // assign ram_addr = {9{(cs_layer != `AFFINE) & (cs_calc == `IM2C)}} & im2c_addr |
@@ -125,6 +126,7 @@ module cnn_layer (
     .load(cs_calc == `BIAS),
     .cs_layer(cs_layer),
     .d(dotout),
+    .valid(bias_valid),
     .q(biasout)
   );
 
