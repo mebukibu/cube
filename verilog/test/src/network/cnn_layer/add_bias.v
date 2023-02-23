@@ -22,13 +22,12 @@ module add_bias (
   // assign
   generate
     genvar i, j;
-    for (i = 0; i < 12 ; i = i + 1)
-      for (j = 0; j < 32; j = j + 1)
+    for (i = 0; i < 12 ; i = i + 1) begin
+      for (j = 0; j < 32; j = j + 1) begin
         assign d_temp[i][j] = d[(32*i+j)*`data_len +: `data_len];
-
-    for (i = 0; i < 32; i = i + 1)
-      for (j = 0; j < 12; j = j + 1)
-        assign q[(12*i+j)*`data_len +: `data_len] = q_temp[j][i];
+        assign q[(32*i+j)*`data_len +: `data_len] = q_temp[i][j];
+      end
+    end
   endgenerate
 
   always @(cs_layer) begin

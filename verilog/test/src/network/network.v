@@ -25,9 +25,11 @@ module network (
   wire [4*3*4*`data_len - 1:0] data2cnn;
   wire cnn_valid;
   wire [32*12*`data_len - 1:0] cnnout;
+  //wire [`data_len - 1:0] cnn_temp [0:11][0:31];
 
   // ports for elu_layer
   wire elu_valid;
+  wire [32*12*`data_len - 1:0] elu_in;
   wire [32*12*`data_len - 1:0] eluout;
 
   // port for comp_layer
@@ -53,6 +55,10 @@ module network (
   assign data2cnn = {4*3*4*`data_len{cs == `LAYER0}} & bufout |
                     {4*3*4*`data_len{cs != `LAYER0}} & eluout[4*3*4*`data_len - 1:0];
 
+  // assign for comp_layer
+  assign comp_d1 = cnnout[0 +: 12*`data_len];
+  assign comp_d2 = cnnout[(32+12)*`data_len +: 12*`data_len];
+
   // assign for output
   assign valid = (cs == `LFIN);
 
@@ -62,11 +68,10 @@ module network (
   //assign data_out = cnnout;
 
   generate
-    genvar i;
-    for (i = 0; i < 12; i = i + 1) begin
-      assign comp_d1[i*`data_len +: `data_len] = cnnout[12*i*`data_len +: `data_len];
-      assign comp_d2[i*`data_len +: `data_len] = cnnout[(12*(i+12)+1)*`data_len +: `data_len];
-    end
+    genvar i, j;
+    for (i = 0; i < 32; i = i + 1)
+      for (j = 0; j < 12; j = j + 1)
+        assign elu_in[(12*i+j)*`data_len +: `data_len] = cnnout[(32*j+i)*`data_len +: `data_len];
   endgenerate
 
   // instance
@@ -103,7 +108,7 @@ module network (
     .clk(clk),
     .rst_n(rst_n),
     .load(cs == `ELU),
-    .d(cnnout),
+    .d(elu_in),
     .valid(elu_valid),
     .q(eluout)
   );
