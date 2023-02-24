@@ -1,6 +1,8 @@
 `include "num_data.v"
 
-module elu_layer (
+module elu_layer #(
+    parameter integer num = 6
+  ) (
     input wire clk,
     input wire rst_n,
     input wire load,
@@ -10,19 +12,19 @@ module elu_layer (
   );
 
   // ports for elu_table  
-  reg [12*`data_len - 1:0] data2elu;
-  wire [12*`data_len - 1:0] eluout;
+  reg [num*`data_len - 1:0] data2elu;
+  wire [num*`data_len - 1:0] eluout;
 
   // use in this module
   integer n;
-  wire [12*`data_len - 1:0] data12 [0:31];
-  reg [12*`data_len - 1:0] q_temp [0:31];
-  reg [4:0] d_index;
-  reg [4:0] q_index;
+  wire [num*`data_len - 1:0] d_temp [0:32*12 / num - 1];
+  reg [num*`data_len - 1:0] q_temp [0:32*12 / num - 1];
+  reg [5:0] d_index;
+  reg [5:0] q_index;
 
   generate
     genvar i;
-    for (i = 0; i < 12; i = i + 1) begin :elu_table
+    for (i = 0; i < num; i = i + 1) begin :elu_table
       elu_table elu_table_inst (
         .clk(clk),
         .rst_n(rst_n),
@@ -34,9 +36,9 @@ module elu_layer (
 
   generate
     genvar j;
-    for (j = 0; j < 32; j = j + 1) begin
-      assign data12[j] = d[12*j*`data_len +: 12*`data_len];
-      assign q[12*j*`data_len +: 12*`data_len] = q_temp[j];
+    for (j = 0; j < 32*12 / num; j = j + 1) begin
+      assign d_temp[j] = d[num*j*`data_len +: num*`data_len];
+      assign q[num*j*`data_len +: num*`data_len] = q_temp[j];
     end
   endgenerate
 
@@ -46,7 +48,7 @@ module elu_layer (
       d_index <= 0;
       q_index <= 0;
       data2elu <= 0;
-      for (n = 0; n < 32; n = n + 1) begin
+      for (n = 0; n < 32*12 / num; n = n + 1) begin
         q_temp[n] <= 0;
       end
     end
@@ -54,17 +56,17 @@ module elu_layer (
       if (d_index < 4) begin
         d_index <= d_index + 1;
       end
-      else if (3 < d_index && d_index < 31) begin
+      else if (3 < d_index && d_index < 32*12 / num - 1) begin
         d_index <= d_index + 1;
         q_index <= q_index + 1;
       end
-      else if (d_index == 31 && q_index != 31) begin
+      else if (d_index == 32*12 / num - 1 && q_index != 32*12 / num - 1) begin
         q_index <= q_index + 1;
       end
-      else if (d_index == 31 && q_index == 31) begin
+      else if (d_index == 32*12 / num - 1 && q_index == 32*12 / num - 1) begin
         valid <= 1;
       end
-      data2elu <= data12[d_index];
+      data2elu <= d_temp[d_index];
       q_temp[q_index] <= eluout;
     end
     else begin
@@ -72,11 +74,6 @@ module elu_layer (
       d_index <= 0;
       q_index <= 0;
     end
-
-    
-
   end
 
-  
-  
 endmodule
