@@ -45,12 +45,12 @@ module dot (
   // offset
   always @(cs_layer) begin
     case (cs_layer)
-      `LAYER0 : offset <= 0*1024;
-      `LAYER1 : offset <= 1*1024;
-      `LAYER2 : offset <= 2*1024;
-      `LAYER3 : offset <= 3*1024;
-      `AFFINE : offset <= 4*1024;
-      default : offset <= 13'hXXXX;
+      `LAYER0 : offset = 0*1024;
+      `LAYER1 : offset = 1*1024;
+      `LAYER2 : offset = 2*1024;
+      `LAYER3 : offset = 3*1024;
+      `AFFINE : offset = 4*1024;
+      default : offset = 13'hXXXX;
     endcase
   end
 
