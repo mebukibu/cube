@@ -2,8 +2,9 @@
 `include "state_layer_data.v"
 
 module dot #(
-    parameter integer num = 9,    // inner product (num, num)
-    parameter integer aw  = 13    // rom address width, aw > log2(288*32*5 / num)
+    parameter integer num = 6,    // inner product (num, num)
+    parameter integer aw  = 13,   // rom address width. aw > log2(288*32*5 / num)
+    parameter integer iw  = 6     // index width. iw > log2(288 / num)
   ) (
     input wire clk,
     input wire rst_n,
@@ -26,23 +27,24 @@ module dot #(
   integer n;
 
   reg [aw - 1:0] offset;
-  reg [4:0] d_index;
-  wire [num*`data_len - 1:0] d_temp [0:11][0:288*12 / num - 1];
+  reg [iw - 1:0] d_index;
+  wire [num*`data_len - 1:0] d_temp [0:11][0:288 / num - 1];
 
-  reg [5:0] q_cnt;
-  reg [4:0] q_index;
+  reg [iw:0] q_cnt;
+  reg [iw - 1:0] q_index;
   reg [`data_len - 1:0] q_sum [0:11];
   reg [`data_len - 1:0] q_temp [0:11][0:31];
 
   // assign
   generate
     genvar i, j;
-    for (i = 0; i < 12 ; i = i + 1) begin
-      for (j = 0; j < 32; j = j + 1) begin
-        assign d_temp[i][j] = d[(32*i+j)*9*`data_len +: 9*`data_len];
+    for (i = 0; i < 12 ; i = i + 1)
+      for (j = 0; j < 288 / num; j = j + 1)
+        assign d_temp[i][j] = d[((288 / num)*i+j)*num*`data_len +: num*`data_len];
+
+    for (i = 0; i < 12 ; i = i + 1)
+      for (j = 0; j < 32; j = j + 1)
         assign q[(32*i+j)*`data_len +: `data_len] = q_temp[i][j];
-      end
-    end
   endgenerate
 
   // offset
@@ -73,7 +75,9 @@ module dot #(
       end
     end
     else if (load) begin
-      d_index <= d_index + 1;
+      if (d_index == 288 / num - 1) d_index <= 0;
+      else d_index <= d_index + 1;
+
       for (n = 0; n < 12; n = n + 1) begin
         data_in[n] <= d_temp[n][d_index];
       end
@@ -112,7 +116,7 @@ module dot #(
           q_sum[n] <= q_sum[n] + innerout[n];
         end
       end
-      if (q_cnt == 288 / num + 1) begin
+      if (q_cnt == 32 + 1) begin
         valid <= 1;
       end
     end
@@ -135,8 +139,8 @@ module dot #(
 
   generate
     genvar k;
-    for (k = 0; k < 12; k = k + 1) begin :inner9
-      inner_9 inner_9_inst (
+    for (k = 0; k < 12; k = k + 1) begin :inner
+      inner_6 inner_inst (
         .clk(clk),
         .rst_n(rst_n),
         .load(1'b1),
