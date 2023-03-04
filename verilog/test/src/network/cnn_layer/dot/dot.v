@@ -1,7 +1,10 @@
 `include "num_data.v"
 `include "state_layer_data.v"
 
-module dot (
+module dot #(
+    parameter integer num = 9,    // inner product (num, num)
+    parameter integer aw  = 13    // rom address width, aw > log2(288*32*5 / num)
+  ) (
     input wire clk,
     input wire rst_n,
     input wire load,
@@ -12,19 +15,19 @@ module dot (
   );
 
   // ports for rom
-  reg [12:0] addr;
-  wire [9*`data_len - 1:0] romout;
+  reg [aw - 1:0] addr;
+  wire [num*`data_len - 1:0] romout;
 
   // ports for inner_9
-  reg [9*`data_len - 1:0] data_in [0:11];
+  reg [num*`data_len - 1:0] data_in [0:11];
   wire [`data_len - 1:0] innerout [0:11];
 
   // use in this module
   integer n;
 
-  reg [12:0] offset;
+  reg [aw - 1:0] offset;
   reg [4:0] d_index;
-  wire [9*`data_len - 1:0] d_temp [0:11][0:31];
+  wire [num*`data_len - 1:0] d_temp [0:11][0:288*12 / num - 1];
 
   reg [5:0] q_cnt;
   reg [4:0] q_index;
@@ -45,12 +48,12 @@ module dot (
   // offset
   always @(cs_layer) begin
     case (cs_layer)
-      `LAYER0 : offset = 0*1024;
-      `LAYER1 : offset = 1*1024;
-      `LAYER2 : offset = 2*1024;
-      `LAYER3 : offset = 3*1024;
-      `AFFINE : offset = 4*1024;
-      default : offset = 13'hXXXX;
+      `LAYER0 : offset = 0*288*32 / num;
+      `LAYER1 : offset = 1*288*32 / num;
+      `LAYER2 : offset = 2*288*32 / num;
+      `LAYER3 : offset = 3*288*32 / num;
+      `AFFINE : offset = 4*288*32 / num;
+      default : offset = {aw{1'bX}};
     endcase
   end
 
@@ -94,7 +97,7 @@ module dot (
       end      
     end
     else if (load) begin
-      if (d_index == 4) begin
+      if (d_index == 4) begin     // fetch 1 clk + inner_9 3 clk = 4 clock needed.
         q_cnt <= q_cnt + 1;
         if (q_cnt != 0) begin
           q_index <= q_index + 1;
@@ -109,7 +112,7 @@ module dot (
           q_sum[n] <= q_sum[n] + innerout[n];
         end
       end
-      if (q_cnt == 33) begin
+      if (q_cnt == 288 / num + 1) begin
         valid <= 1;
       end
     end
