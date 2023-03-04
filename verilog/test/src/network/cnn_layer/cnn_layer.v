@@ -9,7 +9,7 @@ module cnn_layer (
     input wire [3:0] cs_layer,
     input wire [32*3*4*`data_len - 1:0] d,
     output wire valid,
-    output wire [32*12*`data_len - 1:0] q
+    output wire [12*32*`data_len - 1:0] q
     //debug ports
     //output wire [3:0] cs_out,
     //output wire [32*12*`data_len - 1:0] data_out
@@ -39,7 +39,7 @@ module cnn_layer (
 
   // ports for add_bias
   wire bias_valid;
-  wire [32*12*`data_len - 1:0] biasout;
+  wire [12*32*`data_len - 1:0] biasout;
 
   // ports for affine_store
   wire [2*288*`data_len - 1:0] affout;

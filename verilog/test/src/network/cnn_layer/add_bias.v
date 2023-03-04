@@ -8,7 +8,7 @@ module add_bias (
     input wire [3:0] cs_layer,
     input wire [12*32*`data_len - 1:0] d,
     output reg valid,
-    output wire [32*12*`data_len - 1:0] q
+    output wire [12*32*`data_len - 1:0] q
   );
 
   // use in this module

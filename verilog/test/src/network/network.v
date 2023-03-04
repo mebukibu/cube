@@ -67,6 +67,7 @@ module network (
   assign cs_out = cs;
   //assign data_out = cnnout;
 
+  // transpose matrix
   generate
     genvar i, j;
     for (i = 0; i < 32; i = i + 1)
