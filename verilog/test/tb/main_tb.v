@@ -9,7 +9,7 @@ module main_tb ();
   reg [120 - 1:0] d;
   wire [3:0] addr;
   wire [3:0] step;
-  wire q;
+  wire [1:0] q;
 
   wire [3:0] cs_out;
   wire [3:0] data_out;
@@ -30,7 +30,7 @@ module main_tb ();
     }; #10
     rst_n=1; #10
     run=1; #10
-    #60000
+    #90000
     //$display("%b", data_out);
     $finish;
   end

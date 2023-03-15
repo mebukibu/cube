@@ -134,7 +134,7 @@
 	wire [120 - 1:0] d;
 	wire [3:0] addr;
 	wire [3:0] step;
-	wire q;
+	wire [1:0] q;
 	
 	// use in this module
 	reg [3:0] divide_cnt;
@@ -143,7 +143,7 @@
 	assign rst_n = slv_reg0[0];
 	assign run   = slv_reg0[1];
 	assign d = {slv_reg5[23:0], slv_reg4, slv_reg3, slv_reg2};
-	assign my_out = {1'b0, q, run, rst_n};
+	assign my_out = {q[1], q[0], run, rst_n};
 	
 	// divider
 	always @(posedge S_AXI_ACLK) begin
@@ -426,7 +426,7 @@
 	    // added user slv_reg writer
 	    else
 	      begin
-	       slv_reg1[0] <= q;
+	       slv_reg1[1:0] <= q;
 	       case (addr)
 	         4'h1    : slv_reg6 <= {{28{1'b0}}, step};
 	         4'h2    : slv_reg7 <= {{28{1'b0}}, step};

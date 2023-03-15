@@ -8,7 +8,7 @@ module main (
     input wire [120 - 1:0] d,
     output reg [3:0] addr,
     output reg [3:0] step,
-    output wire q,
+    output wire [1:0] q,
     // debug ports
     output wire [3:0] cs_out,
     output wire [3:0] data_out
@@ -37,7 +37,7 @@ module main (
                       (cs == `NETWORK) & network_valid |
                       (cs == `CUBE)    & cube_valid |
                       (cs == `FINISH)  & 1'b0;
-  assign q = (cs == `FINISH);
+  assign q = {solve_fail, cube_fin};
 
   // assign debug ports
   //assign cs_out = cs;
@@ -48,24 +48,17 @@ module main (
     if (!rst_n) begin
       cs_temp <= 0;
       addr <= 0;
-    end
-    else begin
-      cs_temp <= cs;
-      if (cs == `CUBE && cs_temp != `CUBE) begin
-        addr <= addr + 1;
-      end
-    end
-  end
-
-  always @(posedge clk, negedge rst_n) begin
-    if (!rst_n) begin
       step <= 0;
       solve_fail <= 0;
     end
-    else if (cube_valid) begin
-      step <= networkout;
+    else if (addr < 10) begin
+      cs_temp <= cs;
+      if (cs == `CUBE && cs_temp != `CUBE) begin
+        addr <= addr + 1;
+        step <= networkout;
+      end
     end
-    else if (addr == 10) begin
+    else begin
       solve_fail <= 1;
     end
   end

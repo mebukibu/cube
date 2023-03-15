@@ -14,7 +14,7 @@ module main_wrap (
   reg [3:0] expect_value;
   wire [3:0] addr;
   wire [3:0] step;
-  wire mainout;
+  wire [1:0] mainout;
   wire [3:0] data_out;
 
   // assign

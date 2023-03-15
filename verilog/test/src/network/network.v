@@ -47,7 +47,7 @@ module network (
                       (cs == `LAYER3) & cnn_valid |
                       (cs == `AFFINE) & cnn_valid |
                       (cs == `ELU   ) & elu_valid |
-                      (cs == `COMP  ) & 1'b0 | //comp_valid |
+                      (cs == `COMP  ) & comp_valid |
                       (cs == `LFIN  ) & 1'b0;
 
   // assign for cnn_layer
